@@ -18,7 +18,12 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "migration:create": "ts-node --transpile-only ./node_modules/typeorm/cli.js --config src/utils/ormConfig.ts migration:create -n",
+    "migration:generate": "ts-node --transpile-only ./node_modules/typeorm/cli.js --config src/utils/ormConfig.ts migration:generate -n",
+    "migration:run": "ts-node --transpile-only ./node_modules/typeorm/cli.js --config src/utils/ormConfig.ts migration:run",
+    "migration:revert": "ts-node --transpile-only  node_modules/typeorm/cli.js --config src/utils/ormConfig.ts migration:revert",
+    "schema:drop": "ts-node -r tsconfig-paths/register node_modules/typeorm/cli.js schema:drop -f --config src/utils/ormConfig.ts src/utils/ormconfig"
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",
@@ -29,6 +34,8 @@
     "@nestjs/platform-express": "^7.6.15",
     "@nestjs/swagger": "^4.8.0",
     "@nestjs/typeorm": "^7.1.5",
+    "@types/bcrypt": "^5.0.0",
+    "bcrypt": "^5.0.1",
     "class-transformer": "^0.4.0",
     "class-validator": "^0.13.1",
     "pg": "^8.6.0",
