@@ -7,7 +7,7 @@ import {
   Length,
   MinDate,
 } from 'class-validator'
-import { UserRole } from '../entities/user.entity'
+import { UserRole } from 'src/common'
 export class CreateUserDto {
   @Length(3, 64)
   @IsString()

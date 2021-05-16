@@ -14,11 +14,8 @@ import {
   Length,
   MinDate,
 } from 'class-validator'
-
-export enum UserRole {
-  Admin = 'admin',
-  Customer = 'customer',
-}
+import { Exclude } from 'class-transformer'
+import { UserRole } from 'src/common/types'
 
 @Entity('users')
 export class UserEntity {
@@ -41,9 +38,9 @@ export class UserEntity {
   @Length(3, 100)
   email: string
 
-  @Column('varchar', { length: 16, nullable: false })
+  @Column()
   @IsString()
-  @Length(6, 16)
+  @Exclude()
   password: string
 
   @Column('timestamp with time zone', { name: 'date_of_birth', nullable: true })
