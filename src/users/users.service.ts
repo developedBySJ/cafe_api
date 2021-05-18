@@ -1,9 +1,12 @@
 import {
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { UserRole } from 'src/common'
 import { PageOptionsDto } from 'src/common/dto/page-options.dto'
 import { EmailAddressExistException } from 'src/exceptions'
 import { EMAIL_EXIST_ERR_MSG } from 'src/exceptions/message.constant'
@@ -20,9 +23,16 @@ export class UsersService {
     private usersRepository: Repository<UserEntity>,
   ) {}
 
-  async create(user: CreateUserDto) {
-    const password = await UtilsService.hashPassword(user.password)
-    const newUser = this.usersRepository.create({ ...user, password })
+  async create(userData: CreateUserDto, curUser?: UserEntity) {
+    const password = await UtilsService.hashPassword(userData.password)
+    const userRole = curUser?.role === UserRole.Admin ? curUser.role : undefined
+
+    const newUser = this.usersRepository.create({
+      ...userData,
+      password,
+      role: userRole,
+    })
+
     try {
       await this.usersRepository.save(newUser)
       return this.findOne(newUser.id)
@@ -55,10 +65,13 @@ export class UsersService {
     return user
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
+  async update(id: string, updateUserDto: UpdateUserDto, curUser: UserEntity) {
     const user = await this.usersRepository.findOne({ id })
 
     if (!user) throw new NotFoundException()
+
+    if (!UtilsService.hasAbility({ doc: user, ownerKey: 'id', user: curUser }))
+      throw new ForbiddenException()
 
     const updatedUser = await this.usersRepository.save({
       ...user,

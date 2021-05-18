@@ -17,4 +17,15 @@ export class MailService {
       console.log(error)
     }
   }
+  async passwordReset(resetUrl: string, email: string, text?: string) {
+    await this._mailerService.sendMail({
+      to: email,
+      subject: 'Password reset token',
+      template: './templates/passwordReset',
+      text,
+      context: {
+        url: resetUrl,
+      },
+    })
+  }
 }

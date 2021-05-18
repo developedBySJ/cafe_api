@@ -69,6 +69,18 @@ export class UserEntity {
   @IsOptional()
   avatar: string
 
+  @Column({ name: 'password_reset_token', nullable: true })
+  @Exclude()
+  passwordResetToken?: string
+
+  @Column({ name: 'password_reset_request_at', nullable: true })
+  @Exclude()
+  passwordResetRequestAt?: Date
+
+  @Column({ name: 'password_reset_at', nullable: true })
+  @Exclude()
+  passwordResetAt?: Date
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date
 
