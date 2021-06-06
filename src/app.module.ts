@@ -19,6 +19,8 @@ import {
   MAIL_PASS,
 } from './common'
 import { MailModule } from './mail/mail.module'
+import { MenusModule } from './menus/menus.module'
+import { AssetsModule } from './assets/assets.module'
 
 @Module({
   imports: [
@@ -42,6 +44,8 @@ import { MailModule } from './mail/mail.module'
     MailModule,
     UsersModule,
     AuthModule,
+    MenusModule,
+    AssetsModule,
   ],
   controllers: [],
 })

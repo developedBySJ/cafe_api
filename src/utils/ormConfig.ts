@@ -1,5 +1,11 @@
 import { ConfigService } from '@nestjs/config'
-import { DB_HOST, DB_DATABASE, DB_PASSWORD, DB_PORT, DB_USER } from 'src/common'
+import {
+  DB_HOST,
+  DB_DATABASE,
+  DB_PASSWORD,
+  DB_PORT,
+  DB_USER,
+} from '../common/constants/env.constant'
 import { ConnectionOptions } from 'typeorm'
 
 const configService = new ConfigService()

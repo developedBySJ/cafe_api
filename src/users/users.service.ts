@@ -6,10 +6,12 @@ import {
   UnauthorizedException,
 } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { plainToClass } from 'class-transformer'
 import { UserRole } from 'src/common'
 import { PageOptionsDto } from 'src/common/dto/page-options.dto'
 import { EmailAddressExistException } from 'src/exceptions'
 import { EMAIL_EXIST_ERR_MSG } from 'src/exceptions/message.constant'
+import { UserNotFoundException } from 'src/exceptions/user-not-found.exception'
 import { UtilsService } from 'src/utils/services'
 import { Repository } from 'typeorm'
 import { CreateUserDto } from './dto/create-user.dto'
@@ -20,21 +22,21 @@ import { UserEntity } from './entities/user.entity'
 export class UsersService {
   constructor(
     @InjectRepository(UserEntity)
-    private usersRepository: Repository<UserEntity>,
+    private _usersRepository: Repository<UserEntity>,
   ) {}
 
   async create(userData: CreateUserDto, curUser?: UserEntity) {
     const password = await UtilsService.hashPassword(userData.password)
     const userRole = curUser?.role === UserRole.Admin ? curUser.role : undefined
 
-    const newUser = this.usersRepository.create({
+    const newUser = this._usersRepository.create({
       ...userData,
       password,
       role: userRole,
     })
 
     try {
-      await this.usersRepository.save(newUser)
+      await this._usersRepository.save(newUser)
       return this.findOne(newUser.id)
     } catch (error) {
       if (error?.code === '23505') {
@@ -45,7 +47,7 @@ export class UsersService {
   }
 
   async findAll({ skip, limit, order, page }: PageOptionsDto) {
-    const x = await this.usersRepository
+    const x = await this._usersRepository
       .createQueryBuilder()
       .offset(skip)
       .limit(limit)
@@ -55,32 +57,31 @@ export class UsersService {
   }
 
   async findOne(id: string) {
-    const user = await this.usersRepository.findOne({ id })
-    if (!user) throw new NotFoundException()
+    const user = await this._usersRepository.findOne({ id })
+    if (!user) throw new UserNotFoundException(id)
     return user
   }
   async findByEmail(email: string) {
-    const user = await this.usersRepository.findOne({ email })
+    const user = await this._usersRepository.findOne({ email })
     if (!user) throw new NotFoundException()
     return user
   }
 
   async update(id: string, updateUserDto: UpdateUserDto, curUser: UserEntity) {
-    const user = await this.usersRepository.findOne({ id })
-
-    if (!user) throw new NotFoundException()
-
+    const user = await this.findOne(id)
+    console.log(user)
     if (!UtilsService.hasAbility({ doc: user, ownerKey: 'id', user: curUser }))
       throw new ForbiddenException()
 
-    const updatedUser = await this.usersRepository.save({
-      ...user,
-      ...updateUserDto,
-    })
-    return updatedUser
+    const updatedUser = await this._usersRepository.save(
+      Object.assign(user, updateUserDto),
+    )
+    return plainToClass(UserEntity, updatedUser)
   }
 
-  remove(id: string) {
-    return this.usersRepository.delete({ id })
+  async remove(id: string) {
+    const user = await this.findOne(id)
+    await this._usersRepository.delete(user)
+    return null
   }
 }
