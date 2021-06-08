@@ -21,6 +21,7 @@ import {
 import { MailModule } from './mail/mail.module'
 import { MenusModule } from './menus/menus.module'
 import { AssetsModule } from './assets/assets.module'
+import { InventoryModule } from './inventory/inventory.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { AssetsModule } from './assets/assets.module'
     AuthModule,
     MenusModule,
     AssetsModule,
+    InventoryModule,
   ],
   controllers: [],
 })
