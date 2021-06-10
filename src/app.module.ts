@@ -21,7 +21,7 @@ import {
 import { MailModule } from './mail/mail.module'
 import { MenusModule } from './menus/menus.module'
 import { AssetsModule } from './assets/assets.module'
-import { InventoryModule } from './inventory/inventory.module';
+import { InventoryModule } from './inventory/inventory.module'
 
 @Module({
   imports: [
