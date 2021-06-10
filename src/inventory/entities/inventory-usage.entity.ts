@@ -13,6 +13,12 @@ export class InventoryUsage {
   @Column()
   qty: number
 
+  @Column()
+  unit: string
+
+  @Column({ name: 'is_added' })
+  isAdded: boolean
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date
 }
