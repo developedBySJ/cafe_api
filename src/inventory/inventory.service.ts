@@ -1,19 +1,32 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
+import { Repository } from 'typeorm'
 import { CreateInventoryDto } from './dto/create-inventory.dto'
 import { UpdateInventoryDto } from './dto/update-inventory.dto'
+import { InventoryUsageEntity } from './entities/inventory-usage.entity'
+import { InventoryEntity } from './entities/inventory.entity'
 
 @Injectable()
 export class InventoryService {
-  create(createInventoryDto: CreateInventoryDto) {
-    return 'This action adds a new inventory'
+  constructor(
+    private readonly _inventoryRepository: Repository<InventoryEntity>,
+    private readonly _inventoryUsageRepository: Repository<InventoryUsageEntity>,
+  ) {}
+  async create(createInventoryDto: CreateInventoryDto) {
+    const _newMenu = this._inventoryRepository.create(createInventoryDto)
+    const newMenu = await this._inventoryRepository.save(_newMenu)
+
+    return newMenu
   }
 
-  findAll() {
-    return `This action returns all inventory`
+  async findAll() {
+    const inventories = await this._inventoryRepository.find()
+    return inventories
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} inventory`
+  async findOne(id: string) {
+    const inventory = await this._inventoryRepository.findOne({ id })
+    if (!inventory) throw new NotFoundException()
+    return inventory
   }
 
   update(id: number, updateInventoryDto: UpdateInventoryDto) {

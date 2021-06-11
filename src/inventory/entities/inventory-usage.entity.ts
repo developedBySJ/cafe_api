@@ -1,11 +1,11 @@
 import { UserEntity } from 'src/users/entities/user.entity'
 import { Column, CreateDateColumn, Entity, ManyToOne } from 'typeorm'
-import { Inventory } from './inventory.entity'
+import { InventoryEntity } from './inventory.entity'
 
 @Entity('inventory_usage')
-export class InventoryUsage {
-  @ManyToOne(() => Inventory, { onDelete: 'CASCADE' })
-  inventory: Inventory
+export class InventoryUsageEntity {
+  @ManyToOne(() => InventoryEntity, { onDelete: 'CASCADE' })
+  inventory: InventoryEntity
 
   @ManyToOne(() => UserEntity, { onDelete: 'SET NULL', nullable: true })
   consumer: UserEntity
