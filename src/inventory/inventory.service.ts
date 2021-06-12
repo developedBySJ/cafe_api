@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
+import { InventoryNotFoundException } from 'src/exceptions/inventory-not-found.exception'
 import { Repository } from 'typeorm'
 import { CreateInventoryDto } from './dto/create-inventory.dto'
 import { UpdateInventoryDto } from './dto/update-inventory.dto'
@@ -25,11 +26,11 @@ export class InventoryService {
 
   async findOne(id: string) {
     const inventory = await this._inventoryRepository.findOne({ id })
-    if (!inventory) throw new NotFoundException()
+    if (!inventory) throw new InventoryNotFoundException(id)
     return inventory
   }
 
-  update(id: number, updateInventoryDto: UpdateInventoryDto) {
+  update(id: string, updateInventoryDto: UpdateInventoryDto) {
     return `This action updates a #${id} inventory`
   }
 

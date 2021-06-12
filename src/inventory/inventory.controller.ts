@@ -36,7 +36,7 @@ export class InventoryController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateInventoryDto: UpdateInventoryDto,
   ) {
-    return this.inventoryService.update(+id, updateInventoryDto)
+    return this.inventoryService.update(id, updateInventoryDto)
   }
 
   @Delete(':id')
