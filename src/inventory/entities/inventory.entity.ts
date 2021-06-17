@@ -23,11 +23,14 @@ export class InventoryEntity {
   @Column({ nullable: true })
   image?: string
 
-  @Column({ default: [] })
+  @Column('text', { default: [], array: true })
   tags: string[]
 
-  @Column({ default: [] })
-  unit: string[]
+  @Column('text', { default: [], array: true })
+  units: string[]
+
+  @Column({ nullable: true })
+  unit?: string
 
   @ManyToOne(() => UserEntity, {
     onDelete: 'SET NULL',
