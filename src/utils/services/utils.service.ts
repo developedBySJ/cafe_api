@@ -31,4 +31,9 @@ export class UtilsService {
 
     return isAdmin || isOwner
   }
+  static clean(obj) {
+    return Object.entries(obj)
+      .filter(([_, v]) => v != null)
+      .reduce((acc, [k, v]) => ({ ...acc, [k]: v }), {})
+  }
 }
