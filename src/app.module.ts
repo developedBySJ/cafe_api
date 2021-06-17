@@ -22,7 +22,7 @@ import { MailModule } from './mail/mail.module'
 import { MenusModule } from './menus/menus.module'
 import { AssetsModule } from './assets/assets.module'
 import { InventoryModule } from './inventory/inventory.module'
-import { MenuItemsModule } from './menu-items/menu-items.module';
+import { MenuItemsModule } from './menu-items/menu-items.module'
 
 @Module({
   imports: [
