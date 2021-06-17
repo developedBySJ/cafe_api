@@ -1,7 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
-import { INSUFFICIENT_STOCKS_ERR_MSG } from 'src/exceptions'
+import { BadRequestException, Injectable } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { plainToClass } from 'class-transformer'
 import { InSufficientStocksException } from 'src/exceptions/insufficient-stocks.exception'
 import { InventoryNotFoundException } from 'src/exceptions/inventory-not-found.exception'
+import { UserEntity } from 'src/users/entities/user.entity'
 import { Repository } from 'typeorm'
 import { CreateInventoryDto } from './dto/create-inventory.dto'
 import { UpdateInventoryDto } from './dto/update-inventory.dto'
@@ -12,11 +14,17 @@ import { InventoryEntity } from './entities/inventory.entity'
 @Injectable()
 export class InventoryService {
   constructor(
+    @InjectRepository(InventoryEntity)
     private readonly _inventoryRepository: Repository<InventoryEntity>,
+    @InjectRepository(InventoryUsageEntity)
     private readonly _inventoryUsageRepository: Repository<InventoryUsageEntity>,
   ) {}
-  async create(createInventoryDto: CreateInventoryDto) {
-    const _newMenu = this._inventoryRepository.create(createInventoryDto)
+
+  async create(createInventoryDto: CreateInventoryDto, user: UserEntity) {
+    const _newMenu = this._inventoryRepository.create({
+      ...createInventoryDto,
+      createdBy: user,
+    })
     const newMenu = await this._inventoryRepository.save(_newMenu)
 
     return newMenu
@@ -24,17 +32,24 @@ export class InventoryService {
 
   async findAll() {
     const inventories = await this._inventoryRepository.find()
+
     return inventories
   }
 
   async findOne(id: string) {
     const inventory = await this._inventoryRepository.findOne({ id })
+
     if (!inventory) throw new InventoryNotFoundException(id)
+
     return inventory
   }
-  async updateStocks(id: string, { isAdded, qty }: UpdateStocksDto) {
-    const inventory = await this._inventoryRepository.findOne({ id })
-    if (!inventory) throw new InventoryNotFoundException(id)
+
+  async updateStocks(
+    id: string,
+    { isAdded, qty }: UpdateStocksDto,
+    user: UserEntity,
+  ) {
+    const inventory = await this.findOne(id)
 
     const newStocks = isAdded
       ? inventory.availableStock + qty
@@ -49,17 +64,31 @@ export class InventoryService {
       inventory,
       qty,
       isAdded,
+      consumer: user,
+      unit: inventory.unit,
     })
     await this._inventoryUsageRepository.save(usageHistory)
 
     return updatedInventory
   }
 
-  update(id: string, updateInventoryDto: UpdateInventoryDto) {
-    return `This action updates a #${id} inventory`
+  async update(id: string, updateInventoryDto: UpdateInventoryDto) {
+    const inventory = await this.findOne(id)
+
+    const { availableStock, unit, units, ...other } = updateInventoryDto
+
+    const updatedInventory = await this._inventoryRepository.save(
+      Object.assign(inventory, other),
+    )
+
+    return plainToClass(InventoryEntity, updatedInventory)
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} inventory`
+  async remove(id: string) {
+    console.log('REMOVE')
+    const inventory = await this.findOne(id)
+    await this._inventoryRepository.remove(inventory)
+
+    return null
   }
 }
