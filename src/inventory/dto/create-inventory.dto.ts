@@ -1,4 +1,11 @@
-import { IsArray, IsInt, IsOptional, Length, Min } from 'class-validator'
+import {
+  IsArray,
+  IsInt,
+  IsOptional,
+  IsString,
+  Length,
+  Min,
+} from 'class-validator'
 
 export class CreateInventoryDto {
   @Length(2, 16)
@@ -12,11 +19,15 @@ export class CreateInventoryDto {
   @IsOptional()
   image?: string
 
-  @IsArray({ each: true })
+  @IsString({ each: true })
   @IsOptional()
   tags?: string[]
 
-  @IsArray({ each: true })
+  @IsString({ each: true })
   @IsOptional()
-  unit?: string[]
+  units?: string[]
+
+  @Length(2, 16)
+  @IsOptional()
+  unit?: string
 }
