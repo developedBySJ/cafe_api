@@ -1,6 +1,5 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { format } from 'prettier'
 import { AssetType, CLOUDINARY_FOLDER } from 'src/common'
 import { AssetUploadFailedException } from 'src/exceptions'
 import { UserEntity } from 'src/users/entities/user.entity'
@@ -68,7 +67,6 @@ export class AssetsService {
 
       return newAsset.map((asset) => ({ id: asset.id, url: asset.url }))
     } catch (error) {
-      console.log(error)
       throw new AssetUploadFailedException()
     }
   }
