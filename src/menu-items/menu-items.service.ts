@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { MenuItemExistException } from 'src/exceptions/menu-item-exist.exception'
 import { MenuItemNotFoundException } from 'src/exceptions/menu-item-not-found.exception'
 import { MenusService } from 'src/menus/menus.service'
+import { UserEntity } from 'src/users/entities/user.entity'
 import { Repository } from 'typeorm'
 import { CreateMenuItemDto } from './dto/create-menu-item.dto'
 import { UpdateMenuItemDto } from './dto/update-menu-item.dto'
@@ -16,12 +17,13 @@ export class MenuItemsService {
     private readonly _menuService: MenusService,
   ) {}
 
-  async create(createMenuItemDto: CreateMenuItemDto) {
+  async create(createMenuItemDto: CreateMenuItemDto, user: UserEntity) {
     const menu = await this._menuService.findOne(createMenuItemDto.menu)
-    console.log('############## ', menu)
+    console.log({ user })
     const _newMenuItem = this._menuItemRepository.create({
       ...createMenuItemDto,
       menu,
+      createdBy: user,
     })
     try {
       const newMenuItem = await this._menuItemRepository.save(_newMenuItem)
