@@ -10,4 +10,4 @@ export const IMAGE_UPLOAD_ERR_MSG =
 export const NOT_FOUND_MSG = (entity: string, id: string) =>
   `No ${entity} found with id #${id}.`
 
-export const INSUFFICIENT_STOCKS_ERR_MSG = `Inventory don't have sufficent stocks!`
+export const INSUFFICIENT_STOCKS_ERR_MSG = `Inventory don't have sufficient stocks!`
