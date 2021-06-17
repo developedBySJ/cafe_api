@@ -35,8 +35,8 @@ export class MenusService {
     return this._menusRepository.createQueryBuilder().getMany()
   }
 
-  findOne(id: string) {
-    const menu = this._menusRepository.findOne(id)
+  async findOne(id: string) {
+    const menu = await this._menusRepository.findOne(id)
 
     if (!menu) throw new MenuNotFoundException(id)
 
