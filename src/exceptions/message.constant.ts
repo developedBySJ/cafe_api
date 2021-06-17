@@ -4,6 +4,8 @@ export const RESET_TOKEN_EXP_MSG = 'Reset token expired or invalid!'
 
 export const MENU_EXIST_ERR_MSG = 'Menu with same name already exist!'
 
+export const MENU_ITEM_EXIST_ERR_MSG = 'Menu item with same name exist in menu'
+
 export const IMAGE_UPLOAD_ERR_MSG =
   'Something went wrong while uploading assets!'
 
