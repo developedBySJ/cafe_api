@@ -23,7 +23,7 @@ import { MenusModule } from './menus/menus.module'
 import { AssetsModule } from './assets/assets.module'
 import { InventoryModule } from './inventory/inventory.module'
 import { MenuItemsModule } from './menu-items/menu-items.module'
-
+import { UserItemsModule } from './user-items/user-items.module'
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -50,6 +50,7 @@ import { MenuItemsModule } from './menu-items/menu-items.module'
     AssetsModule,
     InventoryModule,
     MenuItemsModule,
+    UserItemsModule,
   ],
   controllers: [],
 })
