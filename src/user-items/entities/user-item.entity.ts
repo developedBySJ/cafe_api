@@ -10,7 +10,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm'
 
-export const USER_ITEMS = 'user-items'
+export const USER_ITEMS = 'user_items'
 
 @Entity(USER_ITEMS)
 export class UserItemEntity {
@@ -19,10 +19,11 @@ export class UserItemEntity {
 
   @ManyToOne(() => UserEntity, {
     onDelete: 'CASCADE',
+    eager: false,
   })
   user: UserEntity
 
-  @OneToOne(() => MenuItemEntity)
+  @ManyToOne(() => MenuItemEntity, { eager: true })
   @JoinColumn({ name: 'menu_item' })
   menuItem: MenuItemEntity
 

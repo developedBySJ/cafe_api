@@ -14,5 +14,6 @@ import { MenusModule } from 'src/menus/menus.module'
   ],
   controllers: [MenuItemsController],
   providers: [MenuItemsService, MenusService],
+  exports: [MenusService],
 })
 export class MenuItemsModule {}
