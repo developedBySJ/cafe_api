@@ -24,6 +24,7 @@ import { AssetsModule } from './assets/assets.module'
 import { InventoryModule } from './inventory/inventory.module'
 import { MenuItemsModule } from './menu-items/menu-items.module'
 import { UserItemsModule } from './user-items/user-items.module'
+import { ReviewsModule } from './reviews/reviews.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -51,6 +52,7 @@ import { UserItemsModule } from './user-items/user-items.module'
     InventoryModule,
     MenuItemsModule,
     UserItemsModule,
+    ReviewsModule,
   ],
   controllers: [],
 })
