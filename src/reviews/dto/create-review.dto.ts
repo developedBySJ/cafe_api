@@ -1,9 +1,8 @@
 import { IsOptional, IsUUID, Length, Max, Min } from 'class-validator'
-import { UserEntity } from 'src/users/entities/user.entity'
 
 export class CreateReviewDto {
   @IsUUID()
-  menuItem: UserEntity
+  menuItem: string
 
   @Length(3, 50)
   title: string

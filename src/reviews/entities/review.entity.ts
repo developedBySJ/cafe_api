@@ -20,7 +20,7 @@ export class ReviewEntity {
 
   @ManyToOne(() => MenuItemEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'menu_item' })
-  menuItem: UserEntity
+  menuItem: MenuItemEntity
 
   @Length(3, 50)
   @Column()
