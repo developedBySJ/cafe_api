@@ -10,14 +10,16 @@ import {
 import { ReviewsService } from './reviews.service'
 import { CreateReviewDto } from './dto/create-review.dto'
 import { UpdateReviewDto } from './dto/update-review.dto'
+import { User } from 'src/common/decorators/user.decorator'
+import { UserEntity } from 'src/users/entities/user.entity'
 
 @Controller('reviews')
 export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
 
   @Post()
-  create(@Body() createReviewDto: CreateReviewDto) {
-    return this.reviewsService.create(createReviewDto)
+  create(@User() user: UserEntity, @Body() createReviewDto: CreateReviewDto) {
+    return this.reviewsService.create(createReviewDto, user)
   }
 
   @Get()
