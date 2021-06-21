@@ -8,7 +8,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule)
   app.use(cookieParser())
   app.setGlobalPrefix('/api/v1')
-  app.useGlobalPipes(new ValidationPipe({ transform: true }))
+  app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }))
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)))
   setUpSwagger(app)
 
