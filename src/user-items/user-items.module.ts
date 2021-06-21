@@ -14,5 +14,6 @@ import { MenuItemEntity } from 'src/menu-items/entities/menu-item.entity'
   ],
   controllers: [UserItemsController],
   providers: [UserItemsService, MenuItemsService],
+  exports: [UserItemsService, MenuItemsService],
 })
 export class UserItemsModule {}
