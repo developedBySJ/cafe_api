@@ -13,3 +13,5 @@ export const NOT_FOUND_MSG = (entity: string, id: string) =>
   `No ${entity} found with id #${id}.`
 
 export const INSUFFICIENT_STOCKS_ERR_MSG = `Inventory don't have sufficient stocks!`
+
+export const REVIEW_EXIST_ERR_MSG = 'You already reviewed this menu item'
