@@ -8,9 +8,11 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm'
 
 @Entity('reviews')
+@Unique(['user', 'menuItem'])
 export class ReviewEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string
