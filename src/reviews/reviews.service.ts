@@ -1,6 +1,8 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { MenuItemEntity } from 'src/menu-items/entities/menu-item.entity'
+import { plainToClass } from 'class-transformer'
+import { ReviewExistException } from 'src/exceptions/review-exist.exception'
+import { ReviewNotFoundException } from 'src/exceptions/review-not-found.exception'
 import { MenuItemsService } from 'src/menu-items/menu-items.service'
 import { UserEntity } from 'src/users/entities/user.entity'
 import { Repository } from 'typeorm'
@@ -27,24 +29,48 @@ export class ReviewsService {
       user,
     })
 
-    const review = await this._reviewsRepository.save(_review)
+    try {
+      const review = await this._reviewsRepository.save(_review)
+
+      return review
+    } catch (error) {
+      if (error?.code === '23505') throw new ReviewExistException()
+
+      throw new InternalServerErrorException()
+    }
+  }
+
+  async findAll(menuItemId: string) {
+    const menuItem = await this._menuItemService.findOne(menuItemId)
+
+    const reviews = await this._reviewsRepository.find({ menuItem })
+
+    return reviews
+  }
+
+  async findOne(id: string) {
+    const review = await this._reviewsRepository.findOne(id)
+
+    if (!review) throw new ReviewNotFoundException(id)
 
     return review
   }
 
-  findAll() {
-    return `This action returns all reviews`
+  async update(id: string, { menuItem, ...other }: UpdateReviewDto) {
+    const review = await this.findOne(id)
+
+    const updatedReview = await this._reviewsRepository.save(
+      Object.assign(review, other),
+    )
+
+    return plainToClass(ReviewEntity, updatedReview)
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} review`
-  }
+  async remove(id: string) {
+    const review = await this.findOne(id)
 
-  update(id: number, updateReviewDto: UpdateReviewDto) {
-    return `This action updates a #${id} review`
-  }
+    await this._reviewsRepository.remove(review)
 
-  remove(id: number) {
-    return `This action removes a #${id} review`
+    return null
   }
 }
