@@ -26,6 +26,7 @@ import { MenuItemsModule } from './menu-items/menu-items.module'
 import { UserItemsModule } from './user-items/user-items.module'
 import { ReviewsModule } from './reviews/reviews.module'
 import { OrdersModule } from './orders/orders.module'
+import { PaymentsModule } from './payments/payments.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -55,6 +56,7 @@ import { OrdersModule } from './orders/orders.module'
     UserItemsModule,
     ReviewsModule,
     OrdersModule,
+    PaymentsModule,
   ],
   controllers: [],
 })
