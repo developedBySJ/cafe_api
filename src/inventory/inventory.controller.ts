@@ -21,11 +21,11 @@ import { User } from 'src/common/decorators/user.decorator'
 import { UserEntity } from 'src/users/entities/user.entity'
 
 @Controller('inventory')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class InventoryController {
   constructor(private readonly inventoryService: InventoryService) {}
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.Admin)
+  @Roles(UserRole.Admin, UserRole.Manager)
   @Post()
   create(
     @User() user: UserEntity,
@@ -34,22 +34,19 @@ export class InventoryController {
     return this.inventoryService.create(createInventoryDto, user)
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.Admin)
+  @Roles(UserRole.Admin, UserRole.Manager, UserRole.Chef)
   @Get()
   findAll() {
     return this.inventoryService.findAll()
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.Admin)
+  @Roles(UserRole.Admin, UserRole.Manager, UserRole.Chef)
   @Get(':id')
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.inventoryService.findOne(id)
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.Admin)
+  @Roles(UserRole.Admin, UserRole.Manager)
   @Patch(':id')
   update(
     @Param('id', ParseUUIDPipe) id: string,
@@ -58,8 +55,7 @@ export class InventoryController {
     return this.inventoryService.update(id, updateInventoryDto)
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.Admin)
+  @Roles(UserRole.Admin, UserRole.Manager, UserRole.Chef)
   @Patch(':id/stocks')
   updateStocks(
     @User() user: UserEntity,
@@ -69,8 +65,7 @@ export class InventoryController {
     return this.inventoryService.updateStocks(id, updateStocksDto, user)
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.Admin)
+  @Roles(UserRole.Admin, UserRole.Manager)
   @Delete(':id')
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.inventoryService.remove(id)
