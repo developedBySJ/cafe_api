@@ -8,6 +8,7 @@ import {
   Delete,
   ParseUUIDPipe,
   UseGuards,
+  Query,
 } from '@nestjs/common'
 import { InventoryService } from './inventory.service'
 import { CreateInventoryDto } from './dto/create-inventory.dto'
@@ -19,6 +20,7 @@ import { Roles } from 'src/common/decorators'
 import { UserRole } from 'src/common'
 import { User } from 'src/common/decorators/user.decorator'
 import { UserEntity } from 'src/users/entities/user.entity'
+import { InventoryFilterDto } from './dto/inventory-filter.dto'
 
 @Controller('inventory')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -36,8 +38,8 @@ export class InventoryController {
 
   @Roles(UserRole.Admin, UserRole.Manager, UserRole.Chef)
   @Get()
-  findAll() {
-    return this.inventoryService.findAll()
+  findAll(@Query() pageOption: InventoryFilterDto) {
+    return this.inventoryService.findAll(pageOption)
   }
 
   @Roles(UserRole.Admin, UserRole.Manager, UserRole.Chef)
