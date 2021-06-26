@@ -23,11 +23,11 @@ export class CreateInventoryDto {
   @IsOptional()
   tags?: string[]
 
-  @IsString({ each: true })
+  @Length(1, 16, { each: true })
   @IsOptional()
   units?: string[]
 
-  @Length(2, 16)
+  @Length(1, 16)
   @IsOptional()
   unit?: string
 }
