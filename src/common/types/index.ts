@@ -13,7 +13,7 @@ export interface JWTPayload {
   role: UserRole
 }
 
-export enum Order {
+export enum Sort {
   ASC = 'ASC',
   DESC = 'DESC',
 }

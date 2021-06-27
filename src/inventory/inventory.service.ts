@@ -41,12 +41,12 @@ export class InventoryService {
     return newInventory
   }
 
-  async findAll({ skip, limit, order, tags }: InventoryFilterDto) {
+  async findAll({ skip, limit, sort, tags }: InventoryFilterDto) {
     const inventories = await this._inventoryRepository
       .createQueryBuilder()
       .offset(skip)
       .limit(limit)
-      .orderBy('created_at', order)
+      .orderBy('created_at', sort)
       .where(
         tags ? `tags @> ARRAY[:...tags]` : '',
         tags ? { tags: tags?.split(',') || [] } : {},
@@ -57,7 +57,7 @@ export class InventoryService {
   async findAllUsage({
     skip,
     limit,
-    order,
+    sort,
     inventory,
   }: InventoryUsageFilterDto) {
     const _inventory = inventory && (await this.findOne(inventory))
@@ -65,7 +65,7 @@ export class InventoryService {
       where: { ...(inventory && { inventory: _inventory }) },
       take: limit,
       skip,
-      order: { createdAt: order },
+      order: { createdAt: sort },
     })
     return inventoryUsage
   }

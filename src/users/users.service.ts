@@ -45,7 +45,7 @@ export class UsersService {
     }
   }
 
-  async findAll({ skip, limit, order, page }: PageOptionsDto) {
+  async findAll({ skip, limit, sort: order, page }: PageOptionsDto) {
     const x = await this._usersRepository
       .createQueryBuilder()
       .offset(skip)
