@@ -2,7 +2,7 @@ import { Transform } from 'class-transformer'
 import { IsBoolean, IsOptional, IsString } from 'class-validator'
 import { PageOptionsDto } from 'src/common/dto/page-options.dto'
 
-export class MenuFilters extends PageOptionsDto {
+export class MenuFilterDto extends PageOptionsDto {
   @IsString()
   @IsOptional()
   search?: string
