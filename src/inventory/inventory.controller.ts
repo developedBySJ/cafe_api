@@ -21,7 +21,10 @@ import { UserRole } from 'src/common'
 import { User } from 'src/common/decorators/user.decorator'
 import { UserEntity } from 'src/users/entities/user.entity'
 import { InventoryFilterDto } from './dto/inventory-filter.dto'
+import { InventoryUsageFilterDto } from './dto/inventory-usage-filter.dto'
+import { ApiTags } from '@nestjs/swagger'
 
+@ApiTags('inventory')
 @Controller('inventory')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class InventoryController {
@@ -40,6 +43,11 @@ export class InventoryController {
   @Get()
   findAll(@Query() pageOption: InventoryFilterDto) {
     return this.inventoryService.findAll(pageOption)
+  }
+  @Roles(UserRole.Admin, UserRole.Manager, UserRole.Chef)
+  @Get('/usage')
+  findAllUsage(@Query() pageOption: InventoryUsageFilterDto) {
+    return this.inventoryService.findAllUsage(pageOption)
   }
 
   @Roles(UserRole.Admin, UserRole.Manager, UserRole.Chef)
