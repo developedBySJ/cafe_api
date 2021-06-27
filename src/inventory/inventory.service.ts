@@ -1,11 +1,13 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { plainToClass } from 'class-transformer'
+import { PageOptionsDto } from 'src/common/dto/page-options.dto'
 import { InSufficientStocksException } from 'src/exceptions/insufficient-stocks.exception'
 import { InventoryNotFoundException } from 'src/exceptions/inventory-not-found.exception'
 import { UserEntity } from 'src/users/entities/user.entity'
-import { Repository } from 'typeorm'
+import { Any, In, Repository } from 'typeorm'
 import { CreateInventoryDto } from './dto/create-inventory.dto'
+import { InventoryFilterDto } from './dto/inventory-filter.dto'
 import { UpdateInventoryDto } from './dto/update-inventory.dto'
 import { UpdateStocksDto } from './dto/update-stocks.dto'
 import { InventoryUsageEntity } from './entities/inventory-usage.entity'
@@ -30,9 +32,17 @@ export class InventoryService {
     return newMenu
   }
 
-  async findAll() {
-    const inventories = await this._inventoryRepository.find()
-
+  async findAll({ skip, limit, order, tags }: InventoryFilterDto) {
+    const inventories = await this._inventoryRepository
+      .createQueryBuilder()
+      .offset(skip)
+      .limit(limit)
+      .orderBy('created_at', order)
+      .where(
+        tags ? `tags @> ARRAY[:...tags]` : '',
+        tags ? { tags: tags?.split(',') || [] } : {},
+      )
+      .getManyAndCount()
     return inventories
   }
 
