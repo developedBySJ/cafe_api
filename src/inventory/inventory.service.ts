@@ -1,13 +1,13 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { plainToClass } from 'class-transformer'
-import { PageOptionsDto } from 'src/common/dto/page-options.dto'
 import { InSufficientStocksException } from 'src/exceptions/insufficient-stocks.exception'
 import { InventoryNotFoundException } from 'src/exceptions/inventory-not-found.exception'
 import { UserEntity } from 'src/users/entities/user.entity'
-import { Any, In, Repository } from 'typeorm'
+import { Repository } from 'typeorm'
 import { CreateInventoryDto } from './dto/create-inventory.dto'
 import { InventoryFilterDto } from './dto/inventory-filter.dto'
+import { InventoryUsageFilterDto } from './dto/inventory-usage-filter.dto'
 import { UpdateInventoryDto } from './dto/update-inventory.dto'
 import { UpdateStocksDto } from './dto/update-stocks.dto'
 import { InventoryUsageEntity } from './entities/inventory-usage.entity'
@@ -23,13 +23,22 @@ export class InventoryService {
   ) {}
 
   async create(createInventoryDto: CreateInventoryDto, user: UserEntity) {
-    const _newMenu = this._inventoryRepository.create({
+    const _newInventory = this._inventoryRepository.create({
       ...createInventoryDto,
       createdBy: user,
     })
-    const newMenu = await this._inventoryRepository.save(_newMenu)
+    const newInventory = await this._inventoryRepository.save(_newInventory)
 
-    return newMenu
+    const usageHistory = this._inventoryUsageRepository.create({
+      inventory: newInventory,
+      qty: newInventory.availableStock,
+      isAdded: true,
+      consumer: user,
+      unit: newInventory.unit,
+    })
+    await this._inventoryUsageRepository.save(usageHistory)
+
+    return newInventory
   }
 
   async findAll({ skip, limit, order, tags }: InventoryFilterDto) {
@@ -44,6 +53,21 @@ export class InventoryService {
       )
       .getManyAndCount()
     return inventories
+  }
+  async findAllUsage({
+    skip,
+    limit,
+    order,
+    inventory,
+  }: InventoryUsageFilterDto) {
+    const _inventory = inventory && (await this.findOne(inventory))
+    const inventoryUsage = await this._inventoryUsageRepository.findAndCount({
+      where: { ...(inventory && { inventory: _inventory }) },
+      take: limit,
+      skip,
+      order: { createdAt: order },
+    })
+    return inventoryUsage
   }
 
   async findOne(id: string) {
