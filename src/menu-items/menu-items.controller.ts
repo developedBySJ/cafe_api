@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common'
 import { MenuItemsService } from './menu-items.service'
 import { CreateMenuItemDto } from './dto/create-menu-item.dto'
@@ -17,6 +18,7 @@ import { Roles } from 'src/common/decorators'
 import { UserRole } from 'src/common'
 import { User } from 'src/common/decorators/user.decorator'
 import { UserEntity } from 'src/users/entities/user.entity'
+import { MenuItemsFilterDto } from './dto/menu-items-filter.dto'
 
 @Controller('menu-items')
 export class MenuItemsController {
@@ -24,7 +26,7 @@ export class MenuItemsController {
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.Admin)
+  @Roles(UserRole.Admin, UserRole.Manager)
   create(
     @User() user: UserEntity,
     @Body() createMenuItemDto: CreateMenuItemDto,
@@ -33,8 +35,9 @@ export class MenuItemsController {
   }
 
   @Get()
-  findAll() {
-    return this.menuItemsService.findAll()
+  findAll(@Query() menuItemFilter: MenuItemsFilterDto) {
+    console.log(menuItemFilter)
+    return this.menuItemsService.findAll(menuItemFilter)
   }
 
   @Get(':id')
@@ -43,7 +46,7 @@ export class MenuItemsController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.Admin)
+  @Roles(UserRole.Admin, UserRole.Manager)
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -53,7 +56,7 @@ export class MenuItemsController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.Admin)
+  @Roles(UserRole.Admin, UserRole.Manager)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.menuItemsService.remove(id)
