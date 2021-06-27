@@ -13,10 +13,14 @@ export class InventoryUsageEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
-  @ManyToOne(() => InventoryEntity, { onDelete: 'CASCADE' })
+  @ManyToOne(() => InventoryEntity, { onDelete: 'CASCADE', eager: true })
   inventory: InventoryEntity
 
-  @ManyToOne(() => UserEntity, { onDelete: 'SET NULL', nullable: true })
+  @ManyToOne(() => UserEntity, {
+    onDelete: 'SET NULL',
+    nullable: true,
+    eager: true,
+  })
   consumer?: UserEntity
 
   @Column()
