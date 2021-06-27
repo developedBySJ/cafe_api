@@ -4,8 +4,9 @@ import { MenuItemExistException } from 'src/exceptions/menu-item-exist.exception
 import { MenuItemNotFoundException } from 'src/exceptions/menu-item-not-found.exception'
 import { MenusService } from 'src/menus/menus.service'
 import { UserEntity } from 'src/users/entities/user.entity'
-import { Repository } from 'typeorm'
+import { Between, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm'
 import { CreateMenuItemDto } from './dto/create-menu-item.dto'
+import { MenuItemsFilterDto } from './dto/menu-items-filter.dto'
 import { UpdateMenuItemDto } from './dto/update-menu-item.dto'
 import { MenuItemEntity } from './entities/menu-item.entity'
 
@@ -36,8 +37,42 @@ export class MenuItemsService {
     }
   }
 
-  async findAll() {
-    const menuItems = await this._menuItemRepository.find()
+  async findAll({
+    isVeg,
+    limit,
+    isAvailable,
+    menu,
+    sortBy,
+    skip,
+    discount,
+    prepTime,
+    priceGte,
+    priceLte,
+    search,
+    sort,
+  }: MenuItemsFilterDto) {
+    let priceFilter = {}
+    if (priceLte && priceGte) {
+      priceFilter = { price: Between(priceGte, priceLte) }
+    } else if (priceGte) {
+      priceFilter = { price: MoreThanOrEqual(priceGte) }
+    } else if (priceLte) {
+      priceFilter = { price: LessThanOrEqual(priceLte) }
+    }
+    const menuItems = await this._menuItemRepository.findAndCount({
+      take: limit,
+      skip,
+      order: { ...(sortBy && { [sortBy]: sort }) },
+      where: {
+        ...priceFilter,
+        ...(prepTime && { prepTime: LessThanOrEqual(prepTime) }),
+        ...(discount && { prepTime: MoreThanOrEqual(discount) }),
+        ...(isAvailable !== undefined && { isAvailable }),
+        ...(isVeg !== undefined && { isVeg }),
+        ...(menu && { menu }),
+      },
+    })
+
     return menuItems
   }
 
