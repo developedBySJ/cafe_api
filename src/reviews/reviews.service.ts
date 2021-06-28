@@ -1,10 +1,16 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common'
+import {
+  ForbiddenException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { plainToClass } from 'class-transformer'
+import { UserRole } from 'src/common'
 import { ReviewExistException } from 'src/exceptions/review-exist.exception'
 import { ReviewNotFoundException } from 'src/exceptions/review-not-found.exception'
 import { MenuItemsService } from 'src/menu-items/menu-items.service'
 import { UserEntity } from 'src/users/entities/user.entity'
+import { UtilsService } from 'src/utils/services'
 import { Repository } from 'typeorm'
 import { CreateReviewDto } from './dto/create-review.dto'
 import { ReviewFilterDto } from './dto/review-filter.dto'
@@ -18,7 +24,6 @@ export class ReviewsService {
     private readonly _reviewsRepository: Repository<ReviewEntity>,
     private readonly _menuItemService: MenuItemsService,
   ) {}
-
   async create(createReviewDto: CreateReviewDto, user: UserEntity) {
     const menuItem = await this._menuItemService.findOne(
       createReviewDto.menuItem,
@@ -27,7 +32,7 @@ export class ReviewsService {
     const _review = this._reviewsRepository.create({
       ...createReviewDto,
       menuItem,
-      user,
+      createdBy: user,
     })
 
     try {

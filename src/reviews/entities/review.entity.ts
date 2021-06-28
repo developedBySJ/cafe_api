@@ -17,9 +17,6 @@ export class ReviewEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
-  @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
-  user: UserEntity
-
   @ManyToOne(() => MenuItemEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'menu_item' })
   menuItem: MenuItemEntity
@@ -39,6 +36,10 @@ export class ReviewEntity {
   @Max(5)
   @Column('integer')
   ratings: number
+
+  @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'created_by' })
+  createdBy: UserEntity
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date
