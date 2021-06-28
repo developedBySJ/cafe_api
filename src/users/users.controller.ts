@@ -37,21 +37,21 @@ export class UsersController {
   }
 
   @Get()
-  @Roles(UserRole.Admin)
+  @Roles(UserRole.Admin, UserRole.Manager)
   @UseGuards(JwtAuthGuard, RolesGuard)
   findAll(@Query() pageOption: UserFilterDto) {
     return this._usersService.findAll(pageOption)
   }
 
   @Get(':id')
-  @Roles(UserRole.Admin, UserRole.Customer)
+  @Roles(UserRole.Admin, UserRole.Manager)
   @UseGuards(JwtAuthGuard, RolesGuard)
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this._usersService.findOne(id)
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard)
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateUserDto: UpdateUserDto,
@@ -61,9 +61,8 @@ export class UsersController {
   }
 
   @Delete(':id')
-  @Roles(UserRole.Admin)
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this._usersService.remove(id)
+  @UseGuards(JwtAuthGuard)
+  remove(@Param('id', ParseUUIDPipe) id: string, @User() curUser: UserEntity) {
+    return this._usersService.remove(id, curUser)
   }
 }
