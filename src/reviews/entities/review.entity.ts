@@ -12,7 +12,7 @@ import {
 } from 'typeorm'
 
 @Entity('reviews')
-@Unique(['user', 'menuItem'])
+@Unique(['createdBy', 'menuItem'])
 export class ReviewEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string
