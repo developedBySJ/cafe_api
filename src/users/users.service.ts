@@ -70,7 +70,7 @@ export class UsersService {
 
   async update(id: string, updateUserDto: UpdateUserDto, curUser: UserEntity) {
     const user = await this.findOne(id)
-    console.log(user)
+
     if (!UtilsService.hasAbility({ doc: user, ownerKey: 'id', user: curUser }))
       throw new ForbiddenException()
 
