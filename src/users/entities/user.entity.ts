@@ -43,6 +43,15 @@ export class UserEntity {
   @Exclude()
   password: string
 
+  @Column({
+    name: 'current_hashed_refresh_token',
+    nullable: true,
+  })
+  @Exclude()
+  @IsString()
+  @IsOptional()
+  currentHashedRefreshToken?: string
+
   @Column('timestamp with time zone', { name: 'date_of_birth', nullable: true })
   @MinDate(new Date())
   @IsDate()
