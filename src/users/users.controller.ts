@@ -22,6 +22,7 @@ import { RolesGuard } from 'src/common/guards/roles.guards'
 import { PageOptionsDto } from 'src/common/dto/page-options.dto'
 import { User } from 'src/common/decorators/user.decorator'
 import { UserEntity } from './entities/user.entity'
+import { UserFilterDto } from './dto/user-filter.dto'
 
 @ApiTags('users')
 @Controller('users')
@@ -38,7 +39,7 @@ export class UsersController {
   @Get()
   @Roles(UserRole.Admin)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  findAll(@Query() pageOption: PageOptionsDto) {
+  findAll(@Query() pageOption: UserFilterDto) {
     return this._usersService.findAll(pageOption)
   }
 
