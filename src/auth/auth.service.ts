@@ -2,7 +2,14 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
 import { InjectRepository } from '@nestjs/typeorm'
-import { AUTH_COOKIE_KEY, JWTPayload } from 'src/common'
+import {
+  AUTH_COOKIE_KEY,
+  JWTPayload,
+  JWT_REFRESH_TOKEN_EXP_TIME,
+  JWT_REFRESH_TOKEN_SECRET,
+  RefreshTokenPayload,
+  REFRESH_TOKEN_COOKIE_KEY,
+} from 'src/common'
 import { CreateUserDto } from 'src/users/dto/create-user.dto'
 import { UserEntity } from 'src/users/entities/user.entity'
 import { UsersService } from 'src/users/users.service'
@@ -27,25 +34,62 @@ export class AuthService {
     private readonly _connection: Connection,
   ) {}
 
-  signToken(payload: JWTPayload) {
+  getAccessToken(payload: JWTPayload) {
     return this._jwtService.sign(payload)
   }
 
-  logout(req: Request, res: Response) {
+  private _getRefreshToken(userId: string) {
+    const payload: RefreshTokenPayload = { userId }
+    const token = this._jwtService.sign(payload, {
+      secret: this._configService.get(JWT_REFRESH_TOKEN_SECRET),
+      expiresIn: `${this._configService.get(JWT_REFRESH_TOKEN_EXP_TIME)}s`,
+    })
+    return token
+  }
+
+  async logout(req: Request, res: Response) {
+    const user = req.user as UserEntity
     res.clearCookie(AUTH_COOKIE_KEY)
+    res.clearCookie(REFRESH_TOKEN_COOKIE_KEY)
+    user?.id &&
+      (await this._usersRepository.update(user.id, {
+        currentHashedRefreshToken: null,
+      }))
     return
   }
 
-  async login(req: Request, res: Response) {
-    const { email, role, id: userId } = req.user as UserEntity
-    const token = this.signToken({ email, role, userId })
+  async _setRefreshTokenCookie(res: Response, userId: string): Promise<string> {
+    const refreshToken = this._getRefreshToken(userId)
+    res.cookie(REFRESH_TOKEN_COOKIE_KEY, refreshToken, {
+      maxAge: this._configService.get(JWT_REFRESH_TOKEN_EXP_TIME) * 1000,
+      httpOnly: true,
+      sameSite: true,
+    })
+    const currentHashedRefreshToken = await UtilsService.hashPassword(
+      refreshToken,
+    )
+    await this._usersRepository.update(userId, {
+      currentHashedRefreshToken,
+    })
+    return refreshToken
+  }
+
+  _setAccessCookie(res: Response, { email, role, id: userId }: UserEntity) {
+    const token = this.getAccessToken({ email, role, userId })
 
     res.cookie(AUTH_COOKIE_KEY, token, {
       maxAge: 2 * 24 * 3600 * 1000,
       httpOnly: true,
+      sameSite: true,
     })
+  }
 
-    await this._mailService.sendWelcome()
+  async login(req: Request, res: Response) {
+    const user = req.user as UserEntity
+
+    await this._setRefreshTokenCookie(res, user.id)
+    this._setAccessCookie(res, user)
+
     return req.user
   }
 
@@ -80,6 +124,18 @@ export class AuthService {
     )
 
     if (!isValidUser) throw new InvalidCredentialsException()
+
+    return user
+  }
+
+  async validateRefreshToken(refreshToken: string, userId: string) {
+    const user = await this._userService.findOne(userId)
+
+    const isRefreshTokenValid = await UtilsService.comparePassword(
+      refreshToken,
+      user.currentHashedRefreshToken,
+    )
+    if (!isRefreshTokenValid) return null
 
     return user
   }
