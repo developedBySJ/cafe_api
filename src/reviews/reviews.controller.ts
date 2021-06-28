@@ -16,6 +16,7 @@ import { UpdateReviewDto } from './dto/update-review.dto'
 import { User } from 'src/common/decorators/user.decorator'
 import { UserEntity } from 'src/users/entities/user.entity'
 import { JwtAuthGuard } from 'src/auth/guards'
+import { ReviewFilterDto } from './dto/review-filter.dto'
 
 @Controller('reviews')
 export class ReviewsController {
@@ -28,8 +29,8 @@ export class ReviewsController {
   }
 
   @Get()
-  findAll(@Query('menuItem', ParseUUIDPipe) menuItem: string) {
-    return this.reviewsService.findAll(menuItem)
+  findAll(@Query() pageOption: ReviewFilterDto) {
+    return this.reviewsService.findAll(pageOption)
   }
 
   @Get(':id')
