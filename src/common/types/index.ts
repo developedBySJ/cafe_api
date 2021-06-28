@@ -12,6 +12,9 @@ export interface JWTPayload {
   email: string
   role: UserRole
 }
+export interface RefreshTokenPayload {
+  userId: string
+}
 
 export enum Sort {
   ASC = 'ASC',
