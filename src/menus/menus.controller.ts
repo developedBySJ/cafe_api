@@ -26,7 +26,7 @@ export class MenusController {
   constructor(private readonly menusService: MenusService) {}
 
   @Post()
-  @Roles(UserRole.Admin)
+  @Roles(UserRole.Admin, UserRole.Manager, UserRole.Chef)
   @UseGuards(JwtAuthGuard, RolesGuard)
   async create(@Body() createMenuDto: CreateMenuDto) {
     return this.menusService.create(createMenuDto)
@@ -43,7 +43,7 @@ export class MenusController {
   }
 
   @Patch(':id')
-  @Roles(UserRole.Admin)
+  @Roles(UserRole.Admin, UserRole.Manager, UserRole.Chef)
   @UseGuards(JwtAuthGuard, RolesGuard)
   update(
     @Param('id', ParseUUIDPipe) id: string,
@@ -54,7 +54,7 @@ export class MenusController {
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
-  @Roles(UserRole.Admin)
+  @Roles(UserRole.Admin, UserRole.Manager, UserRole.Chef)
   @UseGuards(JwtAuthGuard, RolesGuard)
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.menusService.remove(id)
