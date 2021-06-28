@@ -5,9 +5,10 @@ import {
 } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { UserRole } from 'src/common'
+import { UserItemEntity } from 'src/user-items/entities/user-item.entity'
 import { UserItemsService } from 'src/user-items/user-items.service'
 import { UserEntity } from 'src/users/entities/user.entity'
-import { LessThan, Repository } from 'typeorm'
+import { IsNull, LessThan, Not, Repository } from 'typeorm'
 
 import { CreateOrderDto } from './dto/create-order.dto'
 import { UpdateOrderDto } from './dto/update-order.dto'
@@ -19,9 +20,13 @@ export class OrdersService {
     private readonly _userItemsService: UserItemsService,
     @InjectRepository(OrderEntity)
     private readonly _orderRepository: Repository<OrderEntity>,
+    @InjectRepository(UserItemEntity)
+    private readonly _userItemsRepository: Repository<UserItemEntity>,
   ) {}
   async create(createOrderDto: CreateOrderDto, user: UserEntity) {
-    const cartItems = await this._userItemsService.findAll('cart', user)
+    const cartItems = await this._userItemsRepository.find({
+      where: { user, qty: Not(IsNull()) },
+    })
 
     if (!cartItems.length)
       throw new BadRequestException('Add At least one product')
