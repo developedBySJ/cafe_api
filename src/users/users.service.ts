@@ -15,6 +15,7 @@ import { UtilsService } from 'src/utils/services'
 import { Repository } from 'typeorm'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
+import { UserFilterDto } from './dto/user-filter.dto'
 import { UserEntity } from './entities/user.entity'
 
 @Injectable()
@@ -45,14 +46,15 @@ export class UsersService {
     }
   }
 
-  async findAll({ skip, limit, sort: order, page }: PageOptionsDto) {
-    const x = await this._usersRepository
-      .createQueryBuilder()
-      .skip(skip)
-      .limit(limit)
-      .getMany()
-    console.log(x)
-    return x
+  async findAll({ skip, limit, sort, search, role, sortBy }: UserFilterDto) {
+    const users = await this._usersRepository.findAndCount({
+      skip,
+      take: limit,
+      ...(sortBy && { order: { [sortBy]: sort } }),
+      where: { ...(role && { role }) },
+    })
+
+    return users
   }
 
   async findOne(id: string) {
