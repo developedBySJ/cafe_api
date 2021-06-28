@@ -9,6 +9,7 @@ import {
   ParseUUIDPipe,
   HttpStatus,
   UseGuards,
+  Query,
 } from '@nestjs/common'
 import { MenusService } from './menus.service'
 import { CreateMenuDto } from './dto/create-menu.dto'
@@ -18,6 +19,7 @@ import { JwtAuthGuard } from 'src/auth/guards'
 import { RolesGuard } from 'src/common/guards/roles.guards'
 import { Roles } from 'src/common/decorators'
 import { UserRole } from 'src/common'
+import { MenuFilterDto } from './dto/menu-filter.dto'
 
 @Controller('menus')
 export class MenusController {
@@ -31,8 +33,8 @@ export class MenusController {
   }
 
   @Get()
-  findAll() {
-    return this.menusService.findAll()
+  findAll(@Query() menuFilter: MenuFilterDto) {
+    return this.menusService.findAll(menuFilter)
   }
 
   @Get(':id')

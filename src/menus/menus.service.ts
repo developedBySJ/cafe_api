@@ -1,14 +1,11 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common'
+import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { plainToClass } from 'class-transformer'
 import { MenuExistException } from 'src/exceptions/menu-exist.exception'
 import { MenuNotFoundException } from 'src/exceptions/menu-not-found.exception'
 import { Repository } from 'typeorm'
 import { CreateMenuDto } from './dto/create-menu.dto'
+import { MenuFilterDto } from './dto/menu-filter.dto'
 import { UpdateMenuDto } from './dto/update-menu.dto'
 import { MenuEntity } from './entities/menu.entity'
 
@@ -31,8 +28,16 @@ export class MenusService {
     }
   }
 
-  findAll() {
-    return this._menusRepository.createQueryBuilder().getMany()
+  async findAll({ skip, sort, search, page, limit, isActive }: MenuFilterDto) {
+    const menus = await this._menusRepository
+      .createQueryBuilder()
+      .orderBy({ createdAt: sort })
+      .where({ ...(isActive !== undefined && { isActive }) })
+      .skip(skip)
+      .limit(limit)
+      .getManyAndCount()
+
+    return menus
   }
 
   async findOne(id: string) {
