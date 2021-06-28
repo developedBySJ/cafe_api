@@ -16,18 +16,19 @@ export class UserItemEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
-  @ManyToOne(() => UserEntity, {
-    onDelete: 'CASCADE',
-    eager: false,
-  })
-  user: UserEntity
-
   @ManyToOne(() => MenuItemEntity, { eager: true })
   @JoinColumn({ name: 'menu_item' })
   menuItem: MenuItemEntity
 
   @Column('integer', { nullable: true })
   qty?: number
+
+  @ManyToOne(() => UserEntity, {
+    onDelete: 'CASCADE',
+    eager: false,
+  })
+  @JoinColumn({ name: 'created_by' })
+  createdBy: UserEntity
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date

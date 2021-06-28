@@ -27,7 +27,7 @@ export class UserItemsService {
     const operator = userItemType === 'cart' ? Not(IsNull()) : IsNull()
     const userItem = await this._userItemRepository.findOne({
       id,
-      user,
+      createdBy: user,
       qty: operator,
     })
 
@@ -42,7 +42,7 @@ export class UserItemsService {
     const operator = qty ? Not(IsNull()) : IsNull()
 
     const existingUserItem = await this._userItemRepository.findOne({
-      user: user,
+      createdBy: user,
       menuItem: _menuItem,
       qty: operator,
     })
@@ -51,7 +51,7 @@ export class UserItemsService {
       const _newUserItem = this._userItemRepository.create({
         menuItem: _menuItem,
         qty,
-        user,
+        createdBy: user,
       })
       const newUserItem = await this._userItemRepository.save(_newUserItem)
 
@@ -76,7 +76,7 @@ export class UserItemsService {
     const { limit, skip, page, sort } = pageOption
 
     const userItems = await this._userItemRepository.findAndCount({
-      where: { user: user, qty: operator },
+      where: { createdBy: user, qty: operator },
       skip,
       order: { createdAt: sort },
       take: limit,
@@ -88,7 +88,7 @@ export class UserItemsService {
   async update(id: string, { qty }: UpdateUserItemDto, user: UserEntity) {
     const cartItem = await this._userItemRepository.findOne({
       id,
-      user,
+      createdBy: user,
       qty: Not(IsNull()),
     })
 
@@ -112,7 +112,7 @@ export class UserItemsService {
   async removeAll(userItem: UserItemType, user: UserEntity) {
     const operator = userItem === 'cart' ? Not(IsNull()) : IsNull()
 
-    await this._userItemRepository.delete({ qty: operator, user })
+    await this._userItemRepository.delete({ qty: operator, createdBy: user })
 
     return null
   }
