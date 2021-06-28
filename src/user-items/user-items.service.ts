@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { PageOptionsDto } from 'src/common/dto/page-options.dto'
 import { UserItemNotFoundException } from 'src/exceptions/user-item-not-found'
 import { MenuItemsService } from 'src/menu-items/menu-items.service'
 import { UserEntity } from 'src/users/entities/user.entity'
@@ -66,12 +67,19 @@ export class UserItemsService {
     return userItem
   }
 
-  async findAll(userItem: UserItemType, user: UserEntity) {
+  async findAll(
+    userItem: UserItemType,
+    pageOption: PageOptionsDto,
+    user: UserEntity,
+  ) {
     const operator = userItem === 'cart' ? Not(IsNull()) : IsNull()
+    const { limit, skip, page, sort } = pageOption
 
-    const userItems = await this._userItemRepository.find({
-      user: user,
-      qty: operator,
+    const userItems = await this._userItemRepository.findAndCount({
+      where: { user: user, qty: operator },
+      skip,
+      order: { createdAt: sort },
+      take: limit,
     })
 
     return userItems
@@ -98,7 +106,7 @@ export class UserItemsService {
 
     await this._userItemRepository.remove(userItem)
 
-    return this.findAll(userItemType, user)
+    return null
   }
 
   async removeAll(userItem: UserItemType, user: UserEntity) {
@@ -106,6 +114,6 @@ export class UserItemsService {
 
     await this._userItemRepository.delete({ qty: operator, user })
 
-    return []
+    return null
   }
 }
