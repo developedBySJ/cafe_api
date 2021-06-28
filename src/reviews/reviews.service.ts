@@ -7,6 +7,7 @@ import { MenuItemsService } from 'src/menu-items/menu-items.service'
 import { UserEntity } from 'src/users/entities/user.entity'
 import { Repository } from 'typeorm'
 import { CreateReviewDto } from './dto/create-review.dto'
+import { ReviewFilterDto } from './dto/review-filter.dto'
 import { UpdateReviewDto } from './dto/update-review.dto'
 import { ReviewEntity } from './entities/review.entity'
 
@@ -40,10 +41,22 @@ export class ReviewsService {
     }
   }
 
-  async findAll(menuItemId: string) {
+  async findAll({
+    sort,
+    skip,
+    limit,
+    ratings,
+    sortBy,
+    menuItemId,
+  }: ReviewFilterDto) {
     const menuItem = await this._menuItemService.findOne(menuItemId)
 
-    const reviews = await this._reviewsRepository.find({ menuItem })
+    const reviews = await this._reviewsRepository.findAndCount({
+      skip,
+      take: limit,
+      order: { ...(sortBy && { [sortBy]: sort }) },
+      where: { menuItem, ...(ratings && { ratings }) },
+    })
 
     return reviews
   }
