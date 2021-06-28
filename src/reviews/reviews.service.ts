@@ -24,6 +24,23 @@ export class ReviewsService {
     private readonly _reviewsRepository: Repository<ReviewEntity>,
     private readonly _menuItemService: MenuItemsService,
   ) {}
+
+  private async verify(id: string, curUser: UserEntity) {
+    const review = await this.findOne(id)
+    const access = [UserRole.Admin, UserRole.Manager]
+    if (
+      !UtilsService.hasAbility({
+        doc: review,
+        ownerKey: 'createdBy',
+        user: curUser,
+        access,
+      })
+    )
+      throw new ForbiddenException()
+
+    return review
+  }
+
   async create(createReviewDto: CreateReviewDto, user: UserEntity) {
     const menuItem = await this._menuItemService.findOne(
       createReviewDto.menuItem,
@@ -74,8 +91,12 @@ export class ReviewsService {
     return review
   }
 
-  async update(id: string, { menuItem, ...other }: UpdateReviewDto) {
-    const review = await this.findOne(id)
+  async update(
+    id: string,
+    { menuItem, ...other }: UpdateReviewDto,
+    curUser: UserEntity,
+  ) {
+    const review = this.verify(id, curUser)
 
     const updatedReview = await this._reviewsRepository.save(
       Object.assign(review, other),
@@ -84,8 +105,8 @@ export class ReviewsService {
     return plainToClass(ReviewEntity, updatedReview)
   }
 
-  async remove(id: string) {
-    const review = await this.findOne(id)
+  async remove(id: string, curUser: UserEntity) {
+    const review = await this.verify(id, curUser)
 
     await this._reviewsRepository.remove(review)
 

@@ -7,7 +7,6 @@ import {
   Param,
   Delete,
   Query,
-  ParseUUIDPipe,
   UseGuards,
 } from '@nestjs/common'
 import { ReviewsService } from './reviews.service'
@@ -40,13 +39,17 @@ export class ReviewsController {
 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateReviewDto: UpdateReviewDto) {
-    return this.reviewsService.update(id, updateReviewDto)
+  update(
+    @Param('id') id: string,
+    @Body() updateReviewDto: UpdateReviewDto,
+    @User() curUser: UserEntity,
+  ) {
+    return this.reviewsService.update(id, updateReviewDto, curUser)
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.reviewsService.remove(id)
+  remove(@Param('id') id: string, @User() curUser: UserEntity) {
+    return this.reviewsService.remove(id, curUser)
   }
 }
