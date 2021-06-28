@@ -21,12 +21,14 @@ export class UtilsService {
     doc,
     ownerKey = 'user_id',
     user,
+    access = [UserRole.Admin],
   }: {
     user: UserEntity
     doc: any
     ownerKey: string
+    access?: UserRole[]
   }) {
-    const isAdmin = user.role === UserRole.Admin
+    const isAdmin = access.includes(user.role)
     const isOwner = String(doc[ownerKey]) === String(user.id)
 
     return isAdmin || isOwner
