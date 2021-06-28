@@ -26,7 +26,7 @@ export class MenuItemsController {
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.Admin, UserRole.Manager)
+  @Roles(UserRole.Admin, UserRole.Manager, UserRole.Chef)
   create(
     @User() user: UserEntity,
     @Body() createMenuItemDto: CreateMenuItemDto,
@@ -46,7 +46,7 @@ export class MenuItemsController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.Admin, UserRole.Manager)
+  @Roles(UserRole.Admin, UserRole.Manager, UserRole.Chef)
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -56,7 +56,7 @@ export class MenuItemsController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.Admin, UserRole.Manager)
+  @Roles(UserRole.Admin, UserRole.Manager, UserRole.Chef)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.menuItemsService.remove(id)
