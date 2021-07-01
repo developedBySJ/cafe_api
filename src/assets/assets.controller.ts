@@ -17,6 +17,7 @@ import { AssetType, UserRole } from 'src/common'
 import { Roles } from 'src/common/decorators'
 import { User } from 'src/common/decorators/user.decorator'
 import { RolesGuard } from 'src/common/guards/roles.guards'
+import { JwtRefreshGuard } from 'src/auth/guards/refresh.guard'
 import { UserEntity } from 'src/users/entities/user.entity'
 import { AssetsService } from './assets.service'
 import { AssetDto } from './dtos/assets.dto'
@@ -33,7 +34,7 @@ export class AssetsController {
   @Post('/asset')
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(FileInterceptor('file'))
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, JwtRefreshGuard)
   uploadSingle(
     @UploadedFile() file: Express.Multer.File,
     @Body() metaData: AssetDto,
@@ -48,8 +49,8 @@ export class AssetsController {
   @Post('/assets')
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(FilesInterceptor('files', 5))
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.Admin)
+  @UseGuards(JwtAuthGuard, JwtRefreshGuard, RolesGuard)
+  @Roles(UserRole.Admin, UserRole.Manager, UserRole.Chef)
   uploadMulti(
     @UploadedFiles() files: Express.Multer.File[],
     @Body() metaData: AssetDto,
