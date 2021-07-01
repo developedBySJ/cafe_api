@@ -21,6 +21,7 @@ import { MailService } from 'src/mail/mail.service'
 import { randomBytes } from 'crypto'
 import { InvalidCredentialsException } from 'src/exceptions/invalid-credential.exception'
 import { ResetTokenExpireException } from 'src/exceptions/token-exp.exception'
+import { plainToClass } from 'class-transformer'
 
 @Injectable()
 export class AuthService {
@@ -90,7 +91,7 @@ export class AuthService {
     await this._setRefreshTokenCookie(res, user.id)
     this._setAccessCookie(res, user)
 
-    return req.user
+    return plainToClass(UserEntity, user)
   }
 
   signUp(user: CreateUserDto) {
@@ -101,16 +102,16 @@ export class AuthService {
     const viewerCookie = req.cookies[AUTH_COOKIE_KEY]
 
     if (!viewerCookie) {
-      return { didRequest: true }
+      return null
     }
 
     const viewer = this._jwtService.verify<JWTPayload>(viewerCookie)
 
     if (viewer.userId) {
       const user = await this._userService.findOne(viewer.userId)
-      return Object.assign(user, { didRequest: true })
+      return user
     }
-    return { didRequest: true }
+    return null
   }
 
   async validateUser(email: string, password: string) {
@@ -140,7 +141,7 @@ export class AuthService {
     return user
   }
 
-  async forgotPassword(req: Request, email: string) {
+  async forgotPassword(req: Request, email: string): Promise<null> {
     const user = await this._userService.findByEmail(email)
     const queryRunner = this._connection.createQueryRunner()
 
@@ -157,7 +158,7 @@ export class AuthService {
       await queryRunner.manager.save(user)
 
       await queryRunner.commitTransaction()
-      return
+      return null
     } catch (error) {
       // console.log(error)
       await queryRunner.rollbackTransaction()
@@ -167,7 +168,7 @@ export class AuthService {
     }
   }
 
-  async resetPassword(token: string, password: string) {
+  async resetPassword(token: string, password: string): Promise<null> {
     const user = await this._usersRepository.findOne({
       passwordResetToken: token,
     })
@@ -191,7 +192,7 @@ export class AuthService {
         await queryRunner.manager.save(user)
 
         await queryRunner.commitTransaction()
-        return
+        return null
       } catch (error) {
         // console.log(error)
         await queryRunner.rollbackTransaction()

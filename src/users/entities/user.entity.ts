@@ -16,6 +16,7 @@ import {
 } from 'class-validator'
 import { Exclude } from 'class-transformer'
 import { UserRole } from 'src/common/types'
+import { ApiHideProperty } from '@nestjs/swagger'
 
 @Entity('users')
 export class UserEntity {
@@ -38,11 +39,14 @@ export class UserEntity {
   @Length(3, 100)
   email: string
 
+  @ApiHideProperty()
   @Column()
   @IsString()
   @Exclude()
+  @ApiHideProperty()
   password: string
 
+  @ApiHideProperty()
   @Column({
     name: 'current_hashed_refresh_token',
     nullable: true,
@@ -78,14 +82,17 @@ export class UserEntity {
   @IsOptional()
   avatar: string
 
+  @ApiHideProperty()
   @Column({ name: 'password_reset_token', nullable: true })
   @Exclude()
   passwordResetToken?: string
 
+  @ApiHideProperty()
   @Column({ name: 'password_reset_request_at', nullable: true })
   @Exclude()
   passwordResetRequestAt?: Date
 
+  @ApiHideProperty()
   @Column({ name: 'password_reset_at', nullable: true })
   @Exclude()
   passwordResetAt?: Date
