@@ -21,7 +21,17 @@ import { JwtRefreshGuard } from 'src/auth/guards/refresh.guard'
 import { UserEntity } from 'src/users/entities/user.entity'
 import { AssetsService } from './assets.service'
 import { AssetDto } from './dtos/assets.dto'
+import {
+  ApiCookieAuth,
+  ApiCreatedResponse,
+  ApiProperty,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger'
+import { AssetResponse } from './swagger'
 
+@ApiTags('Assets')
+@ApiResponse({ status: 403, description: 'Forbidden.' })
 @Controller()
 export class AssetsController {
   constructor(private readonly _assetService: AssetsService) {}
@@ -62,7 +72,7 @@ export class AssetsController {
     return this._assetService.uploadMulti(files, curUser, metaData.type)
   }
 
-  @Delete()
+  @Delete('/:id')
   delete() {
     return this._assetService.delete()
   }

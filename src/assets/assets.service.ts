@@ -6,6 +6,7 @@ import { UserEntity } from 'src/users/entities/user.entity'
 import { Repository } from 'typeorm'
 import { CloudinaryService } from './cloudinary.service'
 import { AssetEntity } from './entities/assets.entity'
+import { AssetResponse } from './swagger'
 
 @Injectable()
 export class AssetsService {
@@ -19,7 +20,7 @@ export class AssetsService {
     file: Express.Multer.File,
     curUser: UserEntity,
     type: AssetType,
-  ) {
+  ): Promise<AssetResponse> {
     try {
       const res = await this._cloudinaryService.upload(
         file,
@@ -47,7 +48,7 @@ export class AssetsService {
     files: Express.Multer.File[],
     curUser: UserEntity,
     type: AssetType,
-  ) {
+  ): Promise<AssetResponse[]> {
     try {
       const res = await Promise.all(
         files.map((file) =>
@@ -71,6 +72,6 @@ export class AssetsService {
     }
   }
   delete() {
-    return
+    return null
   }
 }
