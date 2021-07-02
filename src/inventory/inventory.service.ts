@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { plainToClass } from 'class-transformer'
+import { PaginationResponseDto } from 'src/common/dto/pagination-response.dto'
 import { InSufficientStocksException } from 'src/exceptions/insufficient-stocks.exception'
 import { InventoryNotFoundException } from 'src/exceptions/inventory-not-found.exception'
 import { UserEntity } from 'src/users/entities/user.entity'
+import { UtilsService } from 'src/utils/services'
 import { Repository } from 'typeorm'
 import { CreateInventoryDto } from './dto/create-inventory.dto'
 import { InventoryFilterDto } from './dto/inventory-filter.dto'
@@ -41,19 +43,33 @@ export class InventoryService {
     return newInventory
   }
 
-  async findAll({ skip, limit, sort, tags }: InventoryFilterDto) {
+  async findAll({ skip, limit, sort, tags, page }: InventoryFilterDto) {
+    console.log({ skip })
     const inventories = await this._inventoryRepository
       .createQueryBuilder()
       .skip(skip)
-      .limit(limit)
+      .take(limit)
       .orderBy('created_at', sort)
       .where(
         tags ? `tags @> ARRAY[:...tags]` : '',
         tags ? { tags: tags?.split(',') || [] } : {},
       )
       .getManyAndCount()
-    return inventories
+
+    const paginationResponse = UtilsService.paginationResponse({
+      baseUrl: '',
+      curPage: page,
+      data: inventories,
+      limit,
+      query: { tags },
+    })
+
+    return plainToClass<unknown, PaginationResponseDto<InventoryEntity[]>>(
+      PaginationResponseDto,
+      paginationResponse,
+    )
   }
+
   async findAllUsage({
     skip,
     limit,
