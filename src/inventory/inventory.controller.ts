@@ -23,10 +23,11 @@ import { UserEntity } from 'src/users/entities/user.entity'
 import { InventoryFilterDto } from './dto/inventory-filter.dto'
 import { InventoryUsageFilterDto } from './dto/inventory-usage-filter.dto'
 import { ApiTags } from '@nestjs/swagger'
+import { JwtRefreshGuard } from 'src/auth/guards/refresh.guard'
 
 @ApiTags('inventory')
 @Controller('inventory')
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, JwtRefreshGuard, RolesGuard)
 export class InventoryController {
   constructor(private readonly inventoryService: InventoryService) {}
 
