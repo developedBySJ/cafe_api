@@ -93,11 +93,11 @@ export class UtilsService {
             ...q,
           })}`
 
-    return plainToClass(PaginationResponseDto, {
+    return {
       pages: { first, last, next, prev },
       result,
       totalCount,
       totalPages,
-    })
+    }
   }
 }
