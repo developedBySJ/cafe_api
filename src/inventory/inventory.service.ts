@@ -41,7 +41,7 @@ export class InventoryService {
         consumer: user,
         unit: newInventory.unit,
       })
-      this._inventoryUsageRepository.save(usageHistory)
+      await this._inventoryUsageRepository.save(usageHistory)
       return newInventory
     } catch (error) {
       if (error?.code === '23505') {
