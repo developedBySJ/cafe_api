@@ -1,9 +1,12 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { plainToClass } from 'class-transformer'
+import { PaginationResponseDto } from 'src/common/dto/pagination-response.dto'
 import { MenuItemExistException } from 'src/exceptions/menu-item-exist.exception'
 import { MenuItemNotFoundException } from 'src/exceptions/menu-item-not-found.exception'
 import { MenusService } from 'src/menus/menus.service'
 import { UserEntity } from 'src/users/entities/user.entity'
+import { UtilsService } from 'src/utils/services'
 import { Between, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm'
 import { CreateMenuItemDto } from './dto/create-menu-item.dto'
 import { MenuItemsFilterDto } from './dto/menu-items-filter.dto'
@@ -50,6 +53,7 @@ export class MenuItemsService {
     priceLte,
     search,
     sort,
+    page,
   }: MenuItemsFilterDto) {
     let priceFilter = {}
     if (priceLte && priceGte) {
@@ -72,8 +76,26 @@ export class MenuItemsService {
         ...(menu && { menu }),
       },
     })
+    const paginationResponse = UtilsService.paginationResponse({
+      baseUrl: '',
+      curPage: page,
+      data: menuItems,
+      limit,
+      query: {
+        isVeg,
+        isAvailable,
+        menu,
+        sortBy,
+        discount,
+        prepTime,
+        priceGte,
+        priceLte,
+        search,
+        sort,
+      },
+    })
 
-    return menuItems
+    return plainToClass(PaginationResponseDto, paginationResponse)
   }
 
   async findOne(id: string) {

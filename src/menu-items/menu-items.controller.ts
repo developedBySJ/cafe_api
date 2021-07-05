@@ -19,7 +19,9 @@ import { UserRole } from 'src/common'
 import { User } from 'src/common/decorators/user.decorator'
 import { UserEntity } from 'src/users/entities/user.entity'
 import { MenuItemsFilterDto } from './dto/menu-items-filter.dto'
+import { ApiTags } from '@nestjs/swagger'
 
+@ApiTags('Menu Items')
 @Controller('menu-items')
 export class MenuItemsController {
   constructor(private readonly menuItemsService: MenuItemsService) {}
