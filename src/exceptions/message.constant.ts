@@ -6,6 +6,8 @@ export const MENU_EXIST_ERR_MSG = 'Menu with same name already exist!'
 
 export const MENU_ITEM_EXIST_ERR_MSG = 'Menu item with same name exist in menu'
 
+export const INVENTORY_EXIST_ERR_MSG = 'Inventory with same name exist in menu'
+
 export const IMAGE_UPLOAD_ERR_MSG =
   'Something went wrong while uploading assets!'
 
