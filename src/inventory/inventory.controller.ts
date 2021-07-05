@@ -25,7 +25,7 @@ import { InventoryUsageFilterDto } from './dto/inventory-usage-filter.dto'
 import { ApiTags } from '@nestjs/swagger'
 import { JwtRefreshGuard } from 'src/auth/guards/refresh.guard'
 
-@ApiTags('inventory')
+@ApiTags('Inventory')
 @Controller('inventory')
 @UseGuards(JwtAuthGuard, JwtRefreshGuard, RolesGuard)
 export class InventoryController {
