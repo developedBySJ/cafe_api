@@ -53,7 +53,7 @@ export class InventoryService {
 
   async findAll({ skip, limit, sort, tags, page }: InventoryFilterDto) {
     const inventories = await this._inventoryRepository
-      .createQueryBuilder()
+      .createQueryBuilder('findAllInventory')
       .skip(skip)
       .take(limit)
       .orderBy('created_at', sort)
