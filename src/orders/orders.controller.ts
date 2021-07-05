@@ -17,9 +17,10 @@ import { UserEntity } from 'src/users/entities/user.entity'
 import { RolesGuard } from 'src/common/guards/roles.guards'
 import { Roles } from 'src/common/decorators'
 import { UserRole } from 'src/common'
+import { JwtRefreshGuard } from 'src/auth/guards/refresh.guard'
 
 @Controller('orders')
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, JwtRefreshGuard, RolesGuard)
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
