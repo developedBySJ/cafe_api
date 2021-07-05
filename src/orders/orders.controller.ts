@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
+  ParseUUIDPipe,
 } from '@nestjs/common'
 import { OrdersService } from './orders.service'
 import { CreateOrderDto } from './dto/create-order.dto'
@@ -18,7 +20,9 @@ import { RolesGuard } from 'src/common/guards/roles.guards'
 import { Roles } from 'src/common/decorators'
 import { UserRole } from 'src/common'
 import { JwtRefreshGuard } from 'src/auth/guards/refresh.guard'
-
+import { ApiTags } from '@nestjs/swagger'
+import { OrderFilterDto } from './dto/orders-filter.dto'
+@ApiTags('Orders')
 @Controller('orders')
 @UseGuards(JwtAuthGuard, JwtRefreshGuard, RolesGuard)
 export class OrdersController {
@@ -30,19 +34,19 @@ export class OrdersController {
   }
 
   @Get()
-  findAllByUser(@User() user: UserEntity) {
-    return this.ordersService.findAllByUser(user)
+  findAllByUser(@User() user: UserEntity, @Query() filter: OrderFilterDto) {
+    return this.ordersService.findAllByUser(user, filter)
   }
 
   @Get('/all')
   @Roles(UserRole.Admin)
-  findAll() {
-    return this.ordersService.findAll()
+  findAll(@Query() filter: OrderFilterDto, @Query('userId') userId?: string) {
+    return this.ordersService.findAll(filter, userId)
   }
 
   @Get('/pending')
-  findPending() {
-    return this.ordersService.findAllPending()
+  findPending(@Query() filter: OrderFilterDto) {
+    return this.ordersService.findAllPending(filter)
   }
 
   @Get(':id')
