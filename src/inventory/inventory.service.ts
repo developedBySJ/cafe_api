@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { plainToClass } from 'class-transformer'
 import { PaginationResponseDto } from 'src/common/dto/pagination-response.dto'
 import { InSufficientStocksException } from 'src/exceptions/insufficient-stocks.exception'
+import { InventoryExistException } from 'src/exceptions/inventory-exist.exception'
 import { InventoryNotFoundException } from 'src/exceptions/inventory-not-found.exception'
 import { UserEntity } from 'src/users/entities/user.entity'
 import { UtilsService } from 'src/utils/services'
@@ -29,18 +30,25 @@ export class InventoryService {
       ...createInventoryDto,
       createdBy: user,
     })
-    const newInventory = await this._inventoryRepository.save(_newInventory)
 
-    const usageHistory = this._inventoryUsageRepository.create({
-      inventory: newInventory,
-      qty: newInventory.availableStock,
-      isAdded: true,
-      consumer: user,
-      unit: newInventory.unit,
-    })
-    await this._inventoryUsageRepository.save(usageHistory)
+    try {
+      const newInventory = await this._inventoryRepository.save(_newInventory)
 
-    return newInventory
+      const usageHistory = this._inventoryUsageRepository.create({
+        inventory: newInventory,
+        qty: newInventory.availableStock,
+        isAdded: true,
+        consumer: user,
+        unit: newInventory.unit,
+      })
+      this._inventoryUsageRepository.save(usageHistory)
+      return newInventory
+    } catch (error) {
+      if (error?.code === '23505') {
+        throw new InventoryExistException()
+      }
+      throw new InternalServerErrorException()
+    }
   }
 
   async findAll({ skip, limit, sort, tags, page }: InventoryFilterDto) {
