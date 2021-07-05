@@ -8,9 +8,21 @@ import { UserRole } from 'src/common'
 import { UserItemEntity } from 'src/user-items/entities/user-item.entity'
 import { UserItemsService } from 'src/user-items/user-items.service'
 import { UserEntity } from 'src/users/entities/user.entity'
-import { IsNull, LessThan, Not, Repository } from 'typeorm'
+import { UtilsService } from 'src/utils/services'
+import {
+  Between,
+  Equal,
+  FindOperator,
+  IsNull,
+  LessThan,
+  LessThanOrEqual,
+  MoreThanOrEqual,
+  Not,
+  Repository,
+} from 'typeorm'
 
 import { CreateOrderDto } from './dto/create-order.dto'
+import { OrderFilterDto } from './dto/orders-filter.dto'
 import { UpdateOrderDto } from './dto/update-order.dto'
 import { OrderEntity, OrderStatus } from './entities/order.entity'
 
@@ -23,9 +35,69 @@ export class OrdersService {
     @InjectRepository(UserItemEntity)
     private readonly _userItemsRepository: Repository<UserItemEntity>,
   ) {}
+
+  private _getQuery(filter: OrderFilterDto) {
+    const {
+      createdAtAfter,
+      createdAtBefore,
+      paymentStatus,
+      skip,
+      totalGte,
+      totalLte,
+      deliveredAt,
+      limit,
+      page,
+      sort,
+      sortBy,
+      status,
+    } = filter
+
+    let createdAtFilter: { createdAt: FindOperator<number> } | {} = {}
+    if (createdAtBefore && createdAtAfter) {
+      createdAtFilter = { createdAt: Between(createdAtAfter, createdAtBefore) }
+    } else if (createdAtAfter) {
+      createdAtFilter = { createdAt: MoreThanOrEqual(createdAtAfter) }
+    } else if (createdAtBefore) {
+      createdAtFilter = { createdAt: LessThanOrEqual(createdAtBefore) }
+    }
+
+    let paymentFilter = paymentStatus ? { payment: Not(IsNull()) } : {}
+
+    let totalFilter: { total: FindOperator<number> } | {} = {}
+    if (totalLte && totalGte) {
+      totalFilter = { total: Between(totalGte, totalLte) }
+    } else if (totalGte) {
+      totalFilter = { total: MoreThanOrEqual(totalGte) }
+    } else if (totalLte) {
+      totalFilter = { total: LessThanOrEqual(totalLte) }
+    }
+
+    let deliveredAtFilter = deliveredAt && { deliveredAt: Equal(deliveredAt) }
+
+    let sortByFilter = sortBy && { order: { [sortBy]: sort } }
+
+    let paginationFilter = { skip, take: limit }
+
+    let statusFilter =
+      status > 0 && status === 'pending'
+        ? { status: LessThan(OrderStatus.Delivered) }
+        : { status }
+
+    let orderFilter = {
+      createdAtFilter,
+      paymentFilter,
+      totalFilter,
+      deliveredAtFilter,
+      sortByFilter,
+      paginationFilter,
+      statusFilter,
+    }
+    return orderFilter
+  }
+
   async create(createOrderDto: CreateOrderDto, user: UserEntity) {
     const cartItems = await this._userItemsRepository.find({
-      where: { user, qty: Not(IsNull()) },
+      where: { createdBy: user, qty: Not(IsNull()) },
     })
 
     if (!cartItems.length)
@@ -61,21 +133,48 @@ export class OrdersService {
     return newOrder
   }
 
-  async findAllByUser(user: UserEntity) {
-    const orders = await this._orderRepository.find({ user })
-    return orders
+  async findAllByUser(user: UserEntity, filter: OrderFilterDto) {
+    return this.findAll(filter, user.id)
   }
 
-  async findAll() {
-    const orders = await this._orderRepository.find()
-    return orders
-  }
+  async findAll(filter: OrderFilterDto, userId?: string) {
+    const {
+      createdAtFilter,
+      deliveredAtFilter,
+      paginationFilter,
+      paymentFilter,
+      sortByFilter,
+      statusFilter,
+      totalFilter,
+    } = this._getQuery(filter)
 
-  async findAllPending() {
-    const orders = await this._orderRepository.find({
-      status: LessThan(OrderStatus.Delivered),
+    const orders = await this._orderRepository.findAndCount({
+      where: {
+        ...(userId && { user: userId }),
+        ...statusFilter,
+        ...createdAtFilter,
+        ...paymentFilter,
+        ...deliveredAtFilter,
+        ...totalFilter,
+      },
+      ...sortByFilter,
+      ...paginationFilter,
     })
-    return orders
+    const { skip, ...query } = filter
+    const paginationResponse = UtilsService.paginationResponse({
+      baseUrl: '',
+      curPage: filter.page,
+      data: orders,
+      limit: filter.limit,
+      query,
+    })
+
+    return paginationResponse
+  }
+
+  async findAllPending(filter: OrderFilterDto) {
+    const pendingFilter = Object.assign(filter, { status: 'pending' })
+    return this.findAll(pendingFilter)
   }
 
   async findOne(id: string) {
