@@ -44,7 +44,6 @@ export class InventoryService {
   }
 
   async findAll({ skip, limit, sort, tags, page }: InventoryFilterDto) {
-    console.log({ skip })
     const inventories = await this._inventoryRepository
       .createQueryBuilder()
       .skip(skip)
@@ -64,10 +63,7 @@ export class InventoryService {
       query: { tags },
     })
 
-    return plainToClass<unknown, PaginationResponseDto<InventoryEntity[]>>(
-      PaginationResponseDto,
-      paginationResponse,
-    )
+    return plainToClass(PaginationResponseDto, paginationResponse)
   }
 
   async findAllUsage({
@@ -75,6 +71,7 @@ export class InventoryService {
     limit,
     sort,
     inventory,
+    page,
   }: InventoryUsageFilterDto) {
     const _inventory = inventory && (await this.findOne(inventory))
     const inventoryUsage = await this._inventoryUsageRepository.findAndCount({
@@ -83,7 +80,15 @@ export class InventoryService {
       skip,
       order: { createdAt: sort },
     })
-    return inventoryUsage
+    const paginationResponse = UtilsService.paginationResponse({
+      baseUrl: '',
+      curPage: page,
+      data: inventoryUsage,
+      limit,
+      query: { inventory },
+    })
+
+    return plainToClass(PaginationResponseDto, paginationResponse)
   }
 
   async findOne(id: string) {
