@@ -66,16 +66,22 @@ export class UtilsService {
     const nextPage = curPage + 1
     const prevPage = curPage - 1
 
-    const first = `${baseUrl}?${this.objToQuery({
-      limit,
-      page: 1,
-      ...q,
-    })}`
-    const last = `${baseUrl}?${this.objToQuery({
-      limit,
-      page: totalPages,
-      ...q,
-    })}`
+    const first =
+      totalPages > 0
+        ? `${baseUrl}?${this.objToQuery({
+            limit,
+            page: 1,
+            ...q,
+          })}`
+        : null
+    const last =
+      totalPages > 0
+        ? `${baseUrl}?${this.objToQuery({
+            limit,
+            page: totalPages,
+            ...q,
+          })}`
+        : null
     const next =
       nextPage > totalPages
         ? null
