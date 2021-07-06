@@ -4,6 +4,7 @@ import { PageOptionsDto } from 'src/common/dto/page-options.dto'
 import { UserItemNotFoundException } from 'src/exceptions/user-item-not-found'
 import { MenuItemsService } from 'src/menu-items/menu-items.service'
 import { UserEntity } from 'src/users/entities/user.entity'
+import { UtilsService } from 'src/utils/services'
 import { IsNull, Not, Repository } from 'typeorm'
 import { CreateUserItemDto } from './dto/create-user-item.dto'
 import { UpdateUserItemDto } from './dto/update-user-item.dto'
@@ -82,7 +83,17 @@ export class UserItemsService {
       take: limit,
     })
 
-    return userItems
+    const paginationResponse = UtilsService.paginationResponse({
+      baseUrl: '',
+      curPage: page,
+      data: userItems,
+      limit,
+      query: {
+        sort,
+      },
+    })
+
+    return paginationResponse
   }
 
   async update(id: string, { qty }: UpdateUserItemDto, user: UserEntity) {
