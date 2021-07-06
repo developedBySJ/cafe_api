@@ -45,6 +45,7 @@
     "cloudinary": "^1.25.1",
     "cookie-parser": "^1.4.5",
     "ejs": "^3.1.6",
+    "helmet": "^4.6.0",
     "moment": "^2.29.1",
     "nodemailer": "^6.6.0",
     "passport": "^0.4.1",
