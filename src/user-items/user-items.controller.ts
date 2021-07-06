@@ -16,8 +16,11 @@ import { JwtAuthGuard } from 'src/auth/guards'
 import { User } from 'src/common/decorators/user.decorator'
 import { UserEntity } from 'src/users/entities/user.entity'
 import { PageOptionsDto } from 'src/common/dto/page-options.dto'
+import { JwtRefreshGuard } from 'src/auth/guards/refresh.guard'
+import { ApiTags } from '@nestjs/swagger'
 
-@UseGuards(JwtAuthGuard)
+@ApiTags('User Items')
+@UseGuards(JwtAuthGuard, JwtRefreshGuard)
 @Controller()
 export class UserItemsController {
   constructor(private readonly userItemsService: UserItemsService) {}
