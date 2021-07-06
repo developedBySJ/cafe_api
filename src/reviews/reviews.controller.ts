@@ -16,12 +16,13 @@ import { User } from 'src/common/decorators/user.decorator'
 import { UserEntity } from 'src/users/entities/user.entity'
 import { JwtAuthGuard } from 'src/auth/guards'
 import { ReviewFilterDto } from './dto/review-filter.dto'
+import { JwtRefreshGuard } from 'src/auth/guards/refresh.guard'
 
 @Controller('reviews')
 export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, JwtRefreshGuard)
   @Post()
   create(@User() user: UserEntity, @Body() createReviewDto: CreateReviewDto) {
     return this.reviewsService.create(createReviewDto, user)
@@ -37,7 +38,7 @@ export class ReviewsController {
     return this.reviewsService.findOne(id)
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, JwtRefreshGuard)
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -47,7 +48,7 @@ export class ReviewsController {
     return this.reviewsService.update(id, updateReviewDto, curUser)
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, JwtRefreshGuard)
   @Delete(':id')
   remove(@Param('id') id: string, @User() curUser: UserEntity) {
     return this.reviewsService.remove(id, curUser)
