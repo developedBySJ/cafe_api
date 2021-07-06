@@ -61,7 +61,15 @@ export class UsersService {
     }
   }
 
-  async findAll({ skip, limit, sort, search, role, sortBy }: UserFilterDto) {
+  async findAll({
+    skip,
+    limit,
+    sort,
+    search,
+    role,
+    sortBy,
+    page,
+  }: UserFilterDto) {
     const users = await this._usersRepository.findAndCount({
       skip,
       take: limit,
@@ -69,7 +77,20 @@ export class UsersService {
       where: { ...(role && { role }) },
     })
 
-    return users
+    const paginationResponse = UtilsService.paginationResponse({
+      baseUrl: '',
+      curPage: page,
+      data: users,
+      limit,
+      query: {
+        sort,
+        search,
+        role,
+        sortBy,
+      },
+    })
+
+    return paginationResponse
   }
 
   async findOne(id: string) {
