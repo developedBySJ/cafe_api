@@ -70,6 +70,7 @@ export class ReviewsService {
     ratings,
     sortBy,
     menuItemId,
+    page,
   }: ReviewFilterDto) {
     const menuItem = await this._menuItemService.findOne(menuItemId)
 
@@ -80,7 +81,20 @@ export class ReviewsService {
       where: { menuItem, ...(ratings && { ratings }) },
     })
 
-    return reviews
+    const paginationResponse = UtilsService.paginationResponse({
+      baseUrl: '',
+      curPage: page,
+      data: reviews,
+      limit,
+      query: {
+        sortBy,
+        menuItemId,
+        ratings,
+        sort,
+      },
+    })
+
+    return paginationResponse
   }
 
   async findOne(id: string) {
