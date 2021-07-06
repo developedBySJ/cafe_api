@@ -17,7 +17,9 @@ import { UserEntity } from 'src/users/entities/user.entity'
 import { JwtAuthGuard } from 'src/auth/guards'
 import { ReviewFilterDto } from './dto/review-filter.dto'
 import { JwtRefreshGuard } from 'src/auth/guards/refresh.guard'
+import { ApiTags } from '@nestjs/swagger'
 
+@ApiTags('Reviews')
 @Controller('reviews')
 export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
