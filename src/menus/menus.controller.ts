@@ -21,7 +21,9 @@ import { Roles } from 'src/common/decorators'
 import { UserRole } from 'src/common'
 import { MenuFilterDto } from './dto/menu-filter.dto'
 import { JwtRefreshGuard } from 'src/auth/guards/refresh.guard'
+import { ApiTags } from '@nestjs/swagger'
 
+@ApiTags('Menus')
 @Controller('menus')
 export class MenusController {
   constructor(private readonly menusService: MenusService) {}
