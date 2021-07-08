@@ -86,7 +86,7 @@ export class AuthService {
   }
 
   async login(req: Request, res: Response) {
-    const user = req.user as UserEntity
+    const user = await this._userService.findOne((req.user as UserEntity)?.id)
 
     await this._setRefreshTokenCookie(res, user.id)
     this._setAccessCookie(res, user)
