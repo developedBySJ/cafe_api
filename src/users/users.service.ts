@@ -7,7 +7,10 @@ import {
 import { InjectRepository } from '@nestjs/typeorm'
 import { plainToClass } from 'class-transformer'
 import { UserRole } from 'src/common'
-import { EmailAddressExistException } from 'src/exceptions'
+import {
+  EmailAddressExistException,
+  UserEmailNotFoundException,
+} from 'src/exceptions'
 import { EMAIL_EXIST_ERR_MSG } from 'src/exceptions/message.constant'
 import { UserNotFoundException } from 'src/exceptions/user-not-found.exception'
 import { UtilsService } from 'src/utils/services'
@@ -101,7 +104,7 @@ export class UsersService {
 
   async findByEmail(email: string) {
     const user = await this._usersRepository.findOne({ email })
-    if (!user) throw new NotFoundException()
+    if (!user) throw new UserEmailNotFoundException()
     return user
   }
 
