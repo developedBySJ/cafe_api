@@ -14,7 +14,7 @@ import {
   Length,
   MinDate,
 } from 'class-validator'
-import { Exclude } from 'class-transformer'
+import { Exclude, Transform } from 'class-transformer'
 import { UserRole } from 'src/common/types'
 import { ApiHideProperty } from '@nestjs/swagger'
 
@@ -36,6 +36,7 @@ export class UserEntity {
 
   @Column('varchar', { length: 100, nullable: false, unique: true })
   @IsEmail()
+  @Transform((email) => String(email.value).toLowerCase())
   @Length(3, 100)
   email: string
 
@@ -60,7 +61,7 @@ export class UserEntity {
   @MinDate(new Date())
   @IsDate()
   @IsOptional()
-  dateOfBirth: Date
+  dateOfBirth?: Date | null
 
   @Column({
     type: 'enum',

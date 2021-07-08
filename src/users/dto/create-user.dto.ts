@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer'
 import {
   IsDate,
   IsEmail,
@@ -20,6 +21,7 @@ export class CreateUserDto {
 
   @IsEmail()
   @Length(3, 100)
+  @Transform((email) => String(email.value).toLowerCase())
   email: string
 
   @IsString()
