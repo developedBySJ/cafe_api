@@ -57,6 +57,9 @@ export class MenuItemEntity {
   })
   menu: MenuEntity
 
+  @Column('text', { default: [], array: true })
+  ingredients: string[]
+
   @ManyToOne(() => UserEntity, {
     onDelete: 'SET NULL',
     nullable: true,
