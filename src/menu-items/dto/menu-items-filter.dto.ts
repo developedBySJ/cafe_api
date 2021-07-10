@@ -5,6 +5,7 @@ import {
   IsEnum,
   IsInt,
   IsOptional,
+  IsString,
   IsUUID,
   Max,
   Min,
@@ -64,4 +65,8 @@ export class MenuItemsFilterDto extends PageOptionsDto {
   @IsEnum(Sort)
   @IsOptional()
   readonly sort?: Sort = Sort.DESC
+
+  @IsString()
+  @IsOptional()
+  readonly ingredients?: string
 }

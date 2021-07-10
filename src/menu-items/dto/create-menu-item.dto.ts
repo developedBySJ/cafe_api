@@ -1,9 +1,11 @@
 import {
+  IsArray,
   IsBoolean,
   IsOptional,
   IsPositive,
   IsString,
   IsUUID,
+  length,
   Length,
   Max,
   Min,
@@ -41,6 +43,11 @@ export class CreateMenuItemDto {
   @IsPositive()
   @IsOptional()
   prepTime?: number
+
+  @IsString({ each: true })
+  @IsArray()
+  @IsOptional()
+  ingredients?: string[]
 
   @IsUUID()
   menu: string
