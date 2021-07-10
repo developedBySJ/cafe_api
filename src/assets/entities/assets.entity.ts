@@ -1,3 +1,4 @@
+import { IsEnum } from 'class-validator'
 import { AssetType } from 'src/common'
 import { UserEntity } from 'src/users/entities/user.entity'
 import {
@@ -23,7 +24,8 @@ export class AssetEntity {
   @Column()
   format: string
 
-  @Column({ enum: AssetType })
+  @Column({ type: 'enum', enum: AssetType })
+  @IsEnum(AssetType)
   type: AssetType
 
   @ManyToOne(() => UserEntity, {

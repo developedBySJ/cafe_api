@@ -23,7 +23,7 @@ export class MenuItemsService {
 
   async create(createMenuItemDto: CreateMenuItemDto, user: UserEntity) {
     const menu = await this._menuService.findOne(createMenuItemDto.menu)
-    console.log({ user })
+
     const _newMenuItem = this._menuItemRepository.create({
       ...createMenuItemDto,
       menu,
