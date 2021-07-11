@@ -6,7 +6,7 @@ import {
   IsOptional,
   IsString,
   Length,
-  MinDate,
+  MaxDate,
 } from 'class-validator'
 import { UserRole } from 'src/common'
 export class CreateUserDto {
@@ -28,7 +28,7 @@ export class CreateUserDto {
   @Length(6, 16)
   password: string
 
-  @MinDate(new Date())
+  @MaxDate(new Date())
   @IsDate()
   @IsOptional()
   dateOfBirth?: Date
