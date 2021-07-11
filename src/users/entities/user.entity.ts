@@ -12,7 +12,7 @@ import {
   IsOptional,
   IsString,
   Length,
-  MinDate,
+  MaxDate,
 } from 'class-validator'
 import { Exclude, Transform } from 'class-transformer'
 import { UserRole } from 'src/common/types'
@@ -58,7 +58,7 @@ export class UserEntity {
   currentHashedRefreshToken?: string
 
   @Column('timestamp with time zone', { name: 'date_of_birth', nullable: true })
-  @MinDate(new Date())
+  @MaxDate(new Date())
   @IsDate()
   @IsOptional()
   dateOfBirth?: Date | null
