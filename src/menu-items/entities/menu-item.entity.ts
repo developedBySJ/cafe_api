@@ -18,7 +18,7 @@ export class MenuItemEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
-  @Length(3, 50)
+  @Length(3, 100)
   @Column()
   title: string
 

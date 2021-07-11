@@ -12,7 +12,7 @@ import {
 } from 'class-validator'
 
 export class CreateMenuItemDto {
-  @Length(3, 50)
+  @Length(3, 100)
   title: string
 
   @Length(3, 100)
