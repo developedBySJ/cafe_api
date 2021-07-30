@@ -8,13 +8,13 @@ class Pages {
   last: string
 }
 
-export class PaginationResponseDto<T> {
+export class PaginationResponseDto<T, M> {
   @Exclude()
   private type?: Function
 
   @ApiProperty()
   @Type((options) => {
-    return (options.newObject as PaginationResponseDto<T>).type
+    return (options.newObject as PaginationResponseDto<T, M>).type
   })
   result: T
 
@@ -26,4 +26,7 @@ export class PaginationResponseDto<T> {
 
   @ApiProperty()
   pages: Pages
+
+  @ApiProperty()
+  meta?: M
 }
