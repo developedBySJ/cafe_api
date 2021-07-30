@@ -1,15 +1,15 @@
 import * as bcrypt from 'bcrypt'
-import { plainToClass } from 'class-transformer'
 import { UserRole } from 'src/common'
 import { PaginationResponseDto } from 'src/common/dto/pagination-response.dto'
 import { UserEntity } from 'src/users/entities/user.entity'
 
-interface IPaginationResponseArgs<T> {
+interface IPaginationResponseArgs<T, M> {
   data: [T, number]
   curPage: number
   limit: number
   baseUrl: string
   query?: { [key: string]: any }
+  meta?: M
 }
 
 export class UtilsService {
@@ -53,13 +53,14 @@ export class UtilsService {
     return new URLSearchParams(obj).toString()
   }
 
-  static paginationResponse<T>({
+  static paginationResponse<T, M = undefined>({
     baseUrl,
     curPage,
     data: [result, totalCount],
     limit,
     query,
-  }: IPaginationResponseArgs<T>): PaginationResponseDto<T> {
+    meta,
+  }: IPaginationResponseArgs<T, M>): PaginationResponseDto<T, M> {
     const totalPages = Math.ceil(totalCount / Math.max(limit, 1))
     const q = this.clean(query)
 
@@ -100,6 +101,7 @@ export class UtilsService {
           })}`
 
     return {
+      meta,
       pages: { first, last, next, prev },
       result,
       totalCount,
