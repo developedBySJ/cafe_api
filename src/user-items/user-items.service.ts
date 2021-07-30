@@ -1,14 +1,17 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { plainToClass } from 'class-transformer'
 import { PageOptionsDto } from 'src/common/dto/page-options.dto'
 import { UserItemNotFoundException } from 'src/exceptions/user-item-not-found'
+import { MenuItemEntity } from 'src/menu-items/entities/menu-item.entity'
 import { MenuItemsService } from 'src/menu-items/menu-items.service'
 import { UserEntity } from 'src/users/entities/user.entity'
 import { UtilsService } from 'src/utils/services'
 import { IsNull, Not, Repository } from 'typeorm'
 import { CreateUserItemDto } from './dto/create-user-item.dto'
+import { CartMetaData } from './dto/meta.dto'
 import { UpdateUserItemDto } from './dto/update-user-item.dto'
-import { UserItemEntity } from './entities/user-item.entity'
+import { UserItemEntity, USER_ITEMS } from './entities/user-item.entity'
 
 export type UserItemType = 'cart' | 'favorite'
 
@@ -83,11 +86,21 @@ export class UserItemsService {
       take: limit,
     })
 
+    const meta: CartMetaData = await this._userItemRepository
+      .createQueryBuilder('getCartMetaData')
+      .innerJoin('menu_items', 'menu_items', 'menu_items.id = menu_item')
+      .where({ createdBy: user, qty: operator })
+      .select(`SUM(menu_items.price*qty)`, 'total')
+      .addSelect(`SUM(menu_items.price*qty*menu_items.discount)`, 'discount')
+      .addSelect(`SUM(menu_items.price*qty*0.18)`, 'taxes')
+      .getRawOne()
+
     const paginationResponse = UtilsService.paginationResponse({
       baseUrl: '',
       curPage: page,
       data: userItems,
       limit,
+      meta,
       query: {
         sort,
       },
