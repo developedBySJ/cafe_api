@@ -2,6 +2,12 @@ import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { DB_DATABASE, DB_HOST, DB_PASSWORD, DB_PORT, DB_USER } from 'src/common'
+import { types } from 'pg'
+
+types.setTypeParser(types.builtins.NUMERIC, (value: string): number =>
+  parseFloat(value),
+)
+types.setTypeParser(types.builtins.INT8, (value) => parseInt(value))
 
 @Module({
   imports: [
@@ -20,6 +26,7 @@ import { DB_DATABASE, DB_HOST, DB_PASSWORD, DB_PORT, DB_USER } from 'src/common'
         synchronize: true,
         logging: 'all',
         logger: 'advanced-console',
+        bigNumberStrings: false,
       }),
     }),
   ],
