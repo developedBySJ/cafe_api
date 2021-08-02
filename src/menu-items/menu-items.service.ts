@@ -5,10 +5,12 @@ import { PaginationResponseDto } from 'src/common/dto/pagination-response.dto'
 import { MenuItemExistException } from 'src/exceptions/menu-item-exist.exception'
 import { MenuItemNotFoundException } from 'src/exceptions/menu-item-not-found.exception'
 import { MenusService } from 'src/menus/menus.service'
+import { ReviewEntity } from 'src/reviews/entities/review.entity'
 import { UserEntity } from 'src/users/entities/user.entity'
 import { UtilsService } from 'src/utils/services'
 import { Between, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm'
 import { CreateMenuItemDto } from './dto/create-menu-item.dto'
+import { MenuItemReview } from './dto/menu-item-response.dto'
 import { MenuItemsFilterDto } from './dto/menu-items-filter.dto'
 import { UpdateMenuItemDto } from './dto/update-menu-item.dto'
 import { MenuItemEntity } from './entities/menu-item.entity'
@@ -18,6 +20,8 @@ export class MenuItemsService {
   constructor(
     @InjectRepository(MenuItemEntity)
     private readonly _menuItemRepository: Repository<MenuItemEntity>,
+    @InjectRepository(ReviewEntity)
+    private readonly _reviewRepository: Repository<ReviewEntity>,
     private readonly _menuService: MenusService,
   ) {}
 
@@ -103,7 +107,28 @@ export class MenuItemsService {
 
     if (!menuItem) throw new MenuItemNotFoundException(id)
 
-    return menuItem
+    const reviews = await this._reviewRepository.findAndCount({
+      where: { menuItem },
+      order: { createdAt: 'DESC' },
+      take: 3,
+      cache: true,
+    })
+
+    const ratings = await this._reviewRepository.query(
+      `SELECT AVG(ratings) as rating FROM reviews WHERE menu_item = $1`,
+      [id],
+    )
+    // console.log({ reviews, ratings })
+
+    // const reviewsMeta = await this._reviewRepository.count({ where: { menuItem } })
+    const reviewFields = plainToClass(MenuItemReview, {
+      reviews: reviews[0],
+      reviewCount: reviews[1] || 0,
+      ratings: ratings[0].rating || 0,
+    })
+    console.log(reviewFields)
+    let x = Object.assign(menuItem, reviewFields)
+    return Object.assign(menuItem, reviewFields)
   }
 
   async update(id: string, updateMenuItemDto: UpdateMenuItemDto) {
