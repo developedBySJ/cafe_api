@@ -37,7 +37,7 @@ export class ReviewEntity {
   @Column('integer')
   ratings: number
 
-  @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
+  @ManyToOne(() => UserEntity, { onDelete: 'CASCADE', eager: true })
   @JoinColumn({ name: 'created_by' })
   createdBy: UserEntity
 
