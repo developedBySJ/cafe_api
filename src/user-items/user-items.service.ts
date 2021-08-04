@@ -86,14 +86,20 @@ export class UserItemsService {
       take: limit,
     })
 
-    const meta: CartMetaData = await this._userItemRepository
-      .createQueryBuilder('getCartMetaData')
-      .innerJoin('menu_items', 'menu_items', 'menu_items.id = menu_item')
-      .where({ createdBy: user, qty: operator })
-      .select(`SUM(menu_items.price*qty)`, 'total')
-      .addSelect(`SUM(menu_items.price*qty*menu_items.discount)`, 'discount')
-      .addSelect(`SUM(menu_items.price*qty*0.18)`, 'taxes')
-      .getRawOne()
+    const meta: CartMetaData | undefined =
+      userItem === 'cart'
+        ? await this._userItemRepository
+            .createQueryBuilder('getCartMetaData')
+            .innerJoin('menu_items', 'menu_items', 'menu_items.id = menu_item')
+            .where({ createdBy: user, qty: operator })
+            .select(`SUM(menu_items.price*qty)`, 'total')
+            .addSelect(
+              `SUM(menu_items.price*qty*menu_items.discount)`,
+              'discount',
+            )
+            .addSelect(`SUM(menu_items.price*qty*0.18)`, 'taxes')
+            .getRawOne()
+        : undefined
 
     const paginationResponse = UtilsService.paginationResponse({
       baseUrl: '',
