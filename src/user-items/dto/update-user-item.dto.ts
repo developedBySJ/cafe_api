@@ -1,4 +1,4 @@
-import { PartialType } from '@nestjs/swagger'
+import { PartialType, PickType } from '@nestjs/swagger'
 import { CreateUserItemDto } from './create-user-item.dto'
 
-export class UpdateUserItemDto extends PartialType(CreateUserItemDto) {}
+export class UpdateUserItemDto extends PickType(CreateUserItemDto, ['qty']) {}
