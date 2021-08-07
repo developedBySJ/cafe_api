@@ -31,6 +31,9 @@ export class OrderEntity {
   user: UserEntity
 
   @Column({ nullable: true })
+  address?: string
+
+  @Column({ nullable: true })
   payment?: string
 
   @Column({ nullable: true })
