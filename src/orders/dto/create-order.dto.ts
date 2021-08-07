@@ -27,6 +27,10 @@ export class CreateOrderDto {
   @Min(1)
   total: number
 
+  @Length(3)
+  @IsOptional()
+  address?: string
+
   @IsEnum(OrderStatus)
   @IsOptional()
   status: OrderStatus = OrderStatus.Placed
