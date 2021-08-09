@@ -18,4 +18,8 @@ export class ReviewFilterDto extends PageOptionsDto {
   @IsEnum(ReviewSortBy)
   @IsOptional()
   sortBy: ReviewSortBy
+
+  @IsOptional()
+  @IsUUID()
+  user?: string
 }

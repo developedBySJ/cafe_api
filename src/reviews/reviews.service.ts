@@ -71,6 +71,7 @@ export class ReviewsService {
     sortBy,
     menuItemId,
     page,
+    user,
   }: ReviewFilterDto) {
     const menuItem = await this._menuItemService.findOne(menuItemId)
 
@@ -78,7 +79,11 @@ export class ReviewsService {
       skip,
       take: limit,
       order: { ...(sortBy && { [sortBy]: sort }) },
-      where: { menuItem, ...(ratings && { ratings }) },
+      where: {
+        menuItem,
+        ...(ratings && { ratings }),
+        ...(user && { createdBy: user }),
+      },
     })
 
     const paginationResponse = UtilsService.paginationResponse({
@@ -97,8 +102,11 @@ export class ReviewsService {
     return paginationResponse
   }
 
-  async findOne(id: string) {
-    const review = await this._reviewsRepository.findOne(id)
+  async findOne(id: string, curUser?: UserEntity) {
+    const review = await this._reviewsRepository.findOne({
+      id,
+      ...(curUser && { createdBy: curUser }),
+    })
 
     if (!review) throw new ReviewNotFoundException(id)
 
