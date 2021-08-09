@@ -118,7 +118,7 @@ export class ReviewsService {
     { menuItem, ...other }: UpdateReviewDto,
     curUser: UserEntity,
   ) {
-    const review = this.verify(id, curUser)
+    const review = await this.verify(id, curUser)
 
     const updatedReview = await this._reviewsRepository.save(
       Object.assign(review, other),
