@@ -98,7 +98,7 @@ export class AuthService {
     return this._userService.create(user)
   }
 
-  async whoAmI(req: Request) {
+  async whoAmI(req: Request, res: Response) {
     const viewerCookie = req.cookies[AUTH_COOKIE_KEY]
 
     if (!viewerCookie) {
@@ -108,9 +108,14 @@ export class AuthService {
     const viewer = this._jwtService.verify<JWTPayload>(viewerCookie)
 
     if (viewer.userId) {
-      const user = await this._userService.findOne(viewer.userId)
-      return user
+      try {
+        const user = await this._usersRepository.findOne(viewer.userId)
+        return user
+      } catch (error) {
+        return this.logout(req, res)
+      }
     }
+
     return null
   }
 

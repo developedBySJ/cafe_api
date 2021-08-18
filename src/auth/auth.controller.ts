@@ -48,8 +48,8 @@ export class AuthController {
   }
 
   @Get('/whoAmI')
-  whoAmI(@Req() req: Request) {
-    return this._authService.whoAmI(req)
+  whoAmI(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    return this._authService.whoAmI(req, res)
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
