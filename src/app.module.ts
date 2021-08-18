@@ -19,6 +19,8 @@ import {
   MAIL_PASS,
   JWT_REFRESH_TOKEN_SECRET,
   JWT_REFRESH_TOKEN_EXP_TIME,
+  STRIPE_CURRENCY,
+  STRIPE_SECRET_KEY,
 } from './common'
 import { MailModule } from './mail/mail.module'
 import { MenusModule } from './menus/menus.module'
@@ -47,6 +49,8 @@ import { PaymentsModule } from './payments/payments.module'
         [MAIL_PASS]: Joi.string().required(),
         [JWT_REFRESH_TOKEN_SECRET]: Joi.string().required(),
         [JWT_REFRESH_TOKEN_EXP_TIME]: Joi.string().required(),
+        [STRIPE_CURRENCY]: Joi.string().required(),
+        [STRIPE_SECRET_KEY]: Joi.string().required(),
       }),
     }),
     DatabaseModule,

@@ -1,11 +1,16 @@
 import { Injectable } from '@nestjs/common'
+import { UserEntity } from 'src/users/entities/user.entity'
 import { CreatePaymentDto } from './dto/create-payment.dto'
 import { UpdatePaymentDto } from './dto/update-payment.dto'
+import { StripeService } from './stripe.service'
 
 @Injectable()
 export class PaymentsService {
-  create(createPaymentDto: CreatePaymentDto) {
-    return 'This action adds a new payment'
+  constructor(private readonly _stripeService: StripeService) {}
+  create(createPaymentDto: CreatePaymentDto, user: UserEntity) {
+    const { amount, orderId, paymentMethodId } = createPaymentDto
+    const description = `Payment for order #${orderId}`
+    return this._stripeService.charge(amount, paymentMethodId, description)
   }
 
   findAll() {
