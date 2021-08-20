@@ -61,7 +61,7 @@ export class OrdersService {
       createdAtFilter = { createdAt: LessThanOrEqual(createdAtBefore) }
     }
 
-    let paymentFilter = paymentStatus ? { payment: Not(IsNull()) } : {}
+    const paymentFilter = paymentStatus ? { payment: Not(IsNull()) } : {}
 
     let totalFilter: { total: FindOperator<number> } | {} = {}
     if (totalLte && totalGte) {
@@ -72,20 +72,20 @@ export class OrdersService {
       totalFilter = { total: LessThanOrEqual(totalLte) }
     }
 
-    let deliveredAtFilter = deliveredAt && { deliveredAt: Equal(deliveredAt) }
+    const deliveredAtFilter = deliveredAt && { deliveredAt: Equal(deliveredAt) }
 
-    let sortByFilter = sortBy && { order: { [sortBy]: sort } }
+    const sortByFilter = sortBy && { order: { [sortBy]: sort } }
 
-    let paginationFilter = { skip, take: limit }
+    const paginationFilter = { skip, take: limit }
 
-    let statusFilter =
+    const statusFilter =
       status > 0 && status === 'pending'
         ? { status: LessThan(OrderStatus.Delivered) }
         : status
-        ? { status }
-        : {}
+          ? { status }
+          : {}
 
-    let orderFilter = {
+    const orderFilter = {
       createdAtFilter,
       paymentFilter,
       totalFilter,
