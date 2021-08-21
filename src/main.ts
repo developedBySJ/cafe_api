@@ -21,6 +21,7 @@ async function bootstrap() {
       whitelist: true,
     }),
   )
+
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)))
   setUpSwagger(app)
 

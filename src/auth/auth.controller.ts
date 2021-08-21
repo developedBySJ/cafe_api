@@ -11,7 +11,7 @@ import {
   Patch,
   Param,
 } from '@nestjs/common'
-import { ApiBody, ApiProperty, ApiTags } from '@nestjs/swagger'
+import { ApiBody, ApiTags } from '@nestjs/swagger'
 import { Response, Request } from 'express'
 import { User } from 'src/common/decorators/user.decorator'
 import { CreateUserDto } from 'src/users/dto/create-user.dto'
