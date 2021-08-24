@@ -7,6 +7,7 @@ export const RESET_TOKEN_EXP_MSG = 'Reset token expired or invalid!'
 export const MENU_EXIST_ERR_MSG = 'Menu with same name already exist!'
 
 export const MENU_ITEM_EXIST_ERR_MSG = 'Menu item with same name exist in menu'
+export const MENU_ITEM_NOT_AVAILABLE = 'Menu item not available right now!'
 
 export const INVENTORY_EXIST_ERR_MSG = 'Inventory with same name exist in menu'
 
