@@ -18,3 +18,16 @@ export class CreatePaymentDto {
   @IsOptional()
   orderId: string
 }
+export class CreateCashPaymentDto {
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  description?: string
+
+  @IsNumber()
+  amount: number
+
+  @IsUUID()
+  @IsOptional()
+  orderId: string
+}

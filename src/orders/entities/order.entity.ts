@@ -1,6 +1,6 @@
 import { Exclude } from 'class-transformer'
 import { IsEnum, Length, Min } from 'class-validator'
-import { MenuItemEntity } from 'src/menu-items/entities/menu-item.entity'
+import { PaymentEntity } from 'src/payments/entities/payment.entity'
 import { UserItemEntity } from 'src/user-items/entities/user-item.entity'
 import { UserEntity } from 'src/users/entities/user.entity'
 import {
@@ -8,7 +8,9 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
@@ -33,8 +35,9 @@ export class OrderEntity {
   @Column({ nullable: true })
   address?: string
 
-  @Column({ nullable: true })
-  payment?: string
+  @OneToOne(() => PaymentEntity, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn()
+  payment?: PaymentEntity
 
   @Column({ nullable: true })
   table?: string
