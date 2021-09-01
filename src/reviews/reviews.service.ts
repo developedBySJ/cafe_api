@@ -73,17 +73,19 @@ export class ReviewsService {
     page,
     user,
   }: ReviewFilterDto) {
-    const menuItem = await this._menuItemService.findOne(menuItemId)
+    const menuItem =
+      menuItemId && (await this._menuItemService.findOne(menuItemId))
 
     const reviews = await this._reviewsRepository.findAndCount({
       skip,
       take: limit,
       order: { ...(sortBy && { [sortBy]: sort }) },
       where: {
-        menuItem,
+        ...(menuItem && { menuItem }),
         ...(ratings && { ratings }),
         ...(user && { createdBy: user }),
       },
+      relations: ['menuItem', 'createdBy'],
     })
 
     const paginationResponse = UtilsService.paginationResponse({

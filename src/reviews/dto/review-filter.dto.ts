@@ -8,7 +8,8 @@ export enum ReviewSortBy {
 
 export class ReviewFilterDto extends PageOptionsDto {
   @IsUUID()
-  menuItemId: string
+  @IsOptional()
+  menuItemId?: string
 
   @Min(0)
   @Max(5)
