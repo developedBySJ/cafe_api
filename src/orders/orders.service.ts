@@ -82,8 +82,8 @@ export class OrdersService {
       status > 0 && status === 'pending'
         ? { status: LessThan(OrderStatus.Delivered) }
         : status
-        ? { status }
-        : {}
+          ? { status }
+          : {}
 
     const orderFilter = {
       createdAtFilter,
@@ -159,6 +159,7 @@ export class OrdersService {
         ...deliveredAtFilter,
         ...totalFilter,
       },
+      loadRelationIds: true,
       ...sortByFilter,
       ...paginationFilter,
     })
