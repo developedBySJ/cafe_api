@@ -47,6 +47,7 @@ export class MenuItemsFilterDto extends PageOptionsDto {
 
   @Min(0)
   @Max(100)
+  @IsInt()
   @IsOptional()
   readonly discount?: number
 

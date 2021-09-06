@@ -8,7 +8,13 @@ import { MenusService } from 'src/menus/menus.service'
 import { ReviewEntity } from 'src/reviews/entities/review.entity'
 import { UserEntity } from 'src/users/entities/user.entity'
 import { UtilsService } from 'src/utils/services'
-import { Between, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm'
+import {
+  Between,
+  ILike,
+  LessThanOrEqual,
+  MoreThanOrEqual,
+  Repository,
+} from 'typeorm'
 import { CreateMenuItemDto } from './dto/create-menu-item.dto'
 import { MenuItemReview } from './dto/menu-item-response.dto'
 import { MenuItemsFilterDto } from './dto/menu-items-filter.dto'
@@ -60,6 +66,7 @@ export class MenuItemsService {
     page,
   }: MenuItemsFilterDto) {
     let priceFilter = {}
+
     if (priceLte && priceGte) {
       priceFilter = { price: Between(priceGte, priceLte) }
     } else if (priceGte) {
@@ -67,14 +74,16 @@ export class MenuItemsService {
     } else if (priceLte) {
       priceFilter = { price: LessThanOrEqual(priceLte) }
     }
+
     const menuItems = await this._menuItemRepository.findAndCount({
       take: limit,
       skip,
       order: { ...(sortBy && { [sortBy]: sort }) },
       where: {
+        ...(search && { title: ILike(`%${search}%`) }),
         ...priceFilter,
         ...(prepTime && { prepTime: LessThanOrEqual(prepTime) }),
-        ...(discount && { prepTime: MoreThanOrEqual(discount) }),
+        ...(discount && { discount: MoreThanOrEqual(discount) }),
         ...(isAvailable !== undefined && { isAvailable }),
         ...(isVeg !== undefined && { isVeg }),
         ...(menu && { menu }),
@@ -126,8 +135,7 @@ export class MenuItemsService {
       reviewCount: reviews[1] || 0,
       ratings: ratings[0].rating || 0,
     })
-    console.log(reviewFields)
-    let x = Object.assign(menuItem, reviewFields)
+
     return Object.assign(menuItem, reviewFields)
   }
 
