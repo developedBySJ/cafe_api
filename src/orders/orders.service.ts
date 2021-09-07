@@ -82,8 +82,8 @@ export class OrdersService {
       status > 0 && status === 'pending'
         ? { status: LessThan(OrderStatus.Delivered) }
         : status
-        ? { status }
-        : {}
+          ? { status }
+          : {}
 
     const orderFilter = {
       createdAtFilter,
@@ -181,7 +181,9 @@ export class OrdersService {
   }
 
   async findOne(id: string) {
-    const order = await this._orderRepository.findOne(id)
+    const order = await this._orderRepository.findOne(id, {
+      loadRelationIds: true,
+    })
 
     if (!order) throw new NotFoundException()
 
