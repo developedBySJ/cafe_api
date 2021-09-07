@@ -1,12 +1,15 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { PaymentNotFoundException } from 'src/exceptions/payment-not-found.exception'
+import { OrderEntity } from 'src/orders/entities/order.entity'
 import { OrdersService } from 'src/orders/orders.service'
 import { UserEntity } from 'src/users/entities/user.entity'
-import { Repository } from 'typeorm'
+import { Between, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm'
 import {
   CreateCashPaymentDto,
   CreatePaymentDto,
 } from './dto/create-payment.dto'
+import { PaymentFilterDto } from './dto/payment-filter.dto'
 import { UpdatePaymentDto } from './dto/update-payment.dto'
 import { PaymentEntity, PaymentType } from './entities/payment.entity'
 import { StripeService } from './stripe.service'
@@ -18,6 +21,8 @@ export class PaymentsService {
     private readonly _orderService: OrdersService,
     @InjectRepository(PaymentEntity)
     private readonly _paymentRepository: Repository<PaymentEntity>,
+    @InjectRepository(OrderEntity)
+    private readonly _orderRepository: Repository<OrderEntity>,
   ) {}
 
   async create(createPaymentDto: CreatePaymentDto, user: UserEntity) {
@@ -31,7 +36,9 @@ export class PaymentsService {
       description,
     )
 
-    const order = orderId && (await this._orderService.findOne(orderId))
+    const order = orderId
+      ? await this._orderService.findOne(orderId)
+      : undefined
 
     const _newPayment = this._paymentRepository.create({
       amount,
@@ -41,8 +48,12 @@ export class PaymentsService {
       createdBy: user,
       order,
     })
-
     const newPayment = await this._paymentRepository.save(_newPayment)
+
+    if (order) {
+      order.payment = newPayment.id as any
+      await this._orderRepository.save(order)
+    }
 
     return newPayment
   }
@@ -64,22 +75,59 @@ export class PaymentsService {
 
     const newPayment = await this._paymentRepository.save(_newPayment)
 
+    if (order) {
+      order.payment = newPayment.id as any
+      console.log(order.payment)
+      await this._orderRepository.save(order)
+    }
+
     return newPayment
   }
 
-  findAll() {
-    return `This action returns all payments`
+  findAll(filter: PaymentFilterDto) {
+    console.log({ filter })
+    const { skip, limit, createdAtFrom, createdAtTo, sort, sortBy } = filter
+    return this._paymentRepository.findAndCount({
+      loadRelationIds: true,
+      skip,
+      take: limit,
+      order: {
+        ...(sortBy && { [sortBy]: sort }),
+      },
+      where: {
+        createdAt: Between(
+          createdAtFrom || new Date(0),
+          createdAtTo || new Date(),
+        ),
+      },
+    })
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} payment`
+  findOne(id: string) {
+    const payment = this._paymentRepository.findOne(id)
+
+    if (!payment) throw new PaymentNotFoundException(id)
+
+    return payment
   }
 
-  update(id: number, updatePaymentDto: UpdatePaymentDto) {
-    return `This action updates a #${id} payment`
+  async update(id: string, updatePaymentDto: UpdatePaymentDto) {
+    const payment = await this.findOne(id)
+
+    const { orderId } = updatePaymentDto
+    const order = orderId && (await this._orderService.findOne(orderId))
+    payment.order = order
+
+    const updatedPayment = await this._paymentRepository.save(payment)
+
+    return updatedPayment
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} payment`
+  async remove(id: string) {
+    const payment = await this.findOne(id)
+
+    await this._paymentRepository.softRemove(payment)
+
+    return null
   }
 }

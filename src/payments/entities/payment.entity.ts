@@ -3,6 +3,7 @@ import { UserEntity } from 'src/users/entities/user.entity'
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -27,6 +28,7 @@ export class PaymentEntity {
   referenceId: string
 
   @OneToOne(() => OrderEntity, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn()
   order?: OrderEntity
 
   @Column('enum', { enum: PaymentType })
@@ -44,4 +46,7 @@ export class PaymentEntity {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date
+
+  @DeleteDateColumn({ name: 'deleted_at' })
+  deletedAt: Date
 }
