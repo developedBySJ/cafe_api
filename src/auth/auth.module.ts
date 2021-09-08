@@ -11,8 +11,8 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { UserEntity } from 'src/users/entities/user.entity'
 import { JWT_EXP_TIME, JWT_SECRET } from 'src/common'
 import { MailerModule } from '@nestjs-modules/mailer'
-import { MailService } from 'src/mail/mail.service'
 import { JwtRefreshTokenStrategy } from './strategy/refresh.stratgy'
+import { AuthTemplate } from 'src/Mail/auth-email.service'
 
 @Module({
   imports: [
@@ -33,7 +33,7 @@ import { JwtRefreshTokenStrategy } from './strategy/refresh.stratgy'
   controllers: [AuthController],
   providers: [
     AuthService,
-    MailService,
+    AuthTemplate,
     JwtStrategy,
     LocalStrategy,
     JwtRefreshTokenStrategy,

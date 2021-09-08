@@ -17,11 +17,11 @@ import { UtilsService } from 'src/utils/services'
 import { Connection, Repository } from 'typeorm'
 import { Request, Response } from 'express'
 import * as moment from 'moment'
-import { MailService } from 'src/mail/mail.service'
 import { randomBytes } from 'crypto'
 import { InvalidCredentialsException } from 'src/exceptions/invalid-credential.exception'
 import { ResetTokenExpireException } from 'src/exceptions/token-exp.exception'
 import { plainToClass } from 'class-transformer'
+import { AuthTemplate } from 'src/Mail/auth-email.service'
 
 @Injectable()
 export class AuthService {
@@ -31,8 +31,8 @@ export class AuthService {
     private readonly _userService: UsersService,
     private readonly _jwtService: JwtService,
     private readonly _configService: ConfigService,
-    private readonly _mailService: MailService,
     private readonly _connection: Connection,
+    private readonly _authEmailService: AuthTemplate,
   ) {}
 
   getAccessToken(payload: JWTPayload) {
@@ -94,8 +94,15 @@ export class AuthService {
     return plainToClass(UserEntity, user)
   }
 
-  signUp(user: CreateUserDto) {
-    return this._userService.create(user)
+  async signUp(user: CreateUserDto) {
+    const newUser = await this._userService.create(user)
+
+    await this._authEmailService.welcome({
+      email: newUser.email,
+      firstName: newUser.firstName,
+    })
+
+    return newUser
   }
 
   async whoAmI(req: Request, res: Response) {
@@ -154,12 +161,15 @@ export class AuthService {
     await queryRunner.startTransaction()
 
     const resetToken = randomBytes(64).toString('hex')
-    const resetUrl = `${req.headers.host}/api/v1/password-reset/${resetToken}`
+
     try {
       user.passwordResetToken = resetToken
       user.passwordResetRequestAt = new Date()
 
-      await this._mailService.passwordReset(resetUrl, user.email)
+      await this._authEmailService.sendPasswordResetToken({
+        email: user.email,
+        token: resetToken,
+      })
       await queryRunner.manager.save(user)
 
       await queryRunner.commitTransaction()
@@ -197,6 +207,12 @@ export class AuthService {
         await queryRunner.manager.save(user)
 
         await queryRunner.commitTransaction()
+
+        await this._authEmailService.sendPasswordResetSuccess({
+          email: user.email,
+          name: user.firstName,
+        })
+
         return null
       } catch (error) {
         // console.log(error)

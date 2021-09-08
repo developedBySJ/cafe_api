@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common'
-import { ConfigModule } from '@nestjs/config'
+import { ConfigModule, ConfigService } from '@nestjs/config'
 import { DatabaseModule } from './database/database.module'
 import { UsersModule } from './users/users.module'
 import { AuthModule } from './auth/auth.module'
@@ -22,7 +22,6 @@ import {
   STRIPE_CURRENCY,
   STRIPE_SECRET_KEY,
 } from './common'
-import { MailModule } from './mail/mail.module'
 import { MenusModule } from './menus/menus.module'
 import { AssetsModule } from './assets/assets.module'
 import { InventoryModule } from './inventory/inventory.module'
@@ -31,6 +30,7 @@ import { UserItemsModule } from './user-items/user-items.module'
 import { ReviewsModule } from './reviews/reviews.module'
 import { OrdersModule } from './orders/orders.module'
 import { PaymentsModule } from './payments/payments.module'
+import { MailmanModule } from '@squareboat/nest-mailman'
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -54,7 +54,6 @@ import { PaymentsModule } from './payments/payments.module'
       }),
     }),
     DatabaseModule,
-    MailModule,
     UsersModule,
     AuthModule,
     MenusModule,
@@ -65,6 +64,17 @@ import { PaymentsModule } from './payments/payments.module'
     ReviewsModule,
     OrdersModule,
     PaymentsModule,
+    MailmanModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (config: ConfigService) => ({
+        host: config.get(MAIL_HOST),
+        port: config.get(MAIL_PORT),
+        username: config.get(MAIL_USER),
+        password: config.get(MAIL_PASS),
+        from: 'no-reply@cafe.com',
+      }),
+    }),
   ],
   controllers: [],
 })

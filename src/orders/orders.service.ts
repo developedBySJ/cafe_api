@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { UserRole } from 'src/common'
+import { OrdersEmailService } from 'src/Mail/orders-email.service'
 import { UserItemEntity } from 'src/user-items/entities/user-item.entity'
 import { UserItemsService } from 'src/user-items/user-items.service'
 import { UserEntity } from 'src/users/entities/user.entity'
@@ -34,6 +35,7 @@ export class OrdersService {
     private readonly _orderRepository: Repository<OrderEntity>,
     @InjectRepository(UserItemEntity)
     private readonly _userItemsRepository: Repository<UserItemEntity>,
+    private readonly _ordersEmailService: OrdersEmailService,
   ) {}
 
   private _getQuery(filter: OrderFilterDto) {
@@ -126,11 +128,18 @@ export class OrdersService {
       orderItems: cartItems,
       deliveredAt,
       status,
+      userEmail: user.email,
     })
 
     const newOrder = await this._orderRepository.save(_newOrder)
 
     await this._userItemsService.removeAll('cart', user)
+
+    await this._ordersEmailService.orderPlaced({
+      email: user.email,
+      orderId: newOrder.id,
+      firstName: user.firstName,
+    })
 
     return newOrder
   }
@@ -205,6 +214,13 @@ export class OrdersService {
     }
 
     const updatedOrder = await this._orderRepository.save(order)
+
+    if (updatedOrder.status === OrderStatus.Delivered) {
+      await this._ordersEmailService.orderDelivered({
+        email: updatedOrder.userEmail,
+        orderId: updatedOrder.id,
+      })
+    }
 
     return updatedOrder
   }

@@ -10,6 +10,7 @@ import { OrderEntity } from 'src/orders/entities/order.entity'
 import { UserItemEntity } from 'src/user-items/entities/user-item.entity'
 import { OrdersModule } from 'src/orders/orders.module'
 import { UserItemsModule } from 'src/user-items/user-items.module'
+import { OrdersEmailService } from 'src/Mail/orders-email.service'
 
 @Module({
   controllers: [PaymentsController],
@@ -18,6 +19,12 @@ import { UserItemsModule } from 'src/user-items/user-items.module'
     OrdersModule,
     UserItemsModule,
   ],
-  providers: [PaymentsService, StripeService, ConfigService, OrdersService],
+  providers: [
+    PaymentsService,
+    OrdersEmailService,
+    StripeService,
+    ConfigService,
+    OrdersService,
+  ],
 })
 export class PaymentsModule {}

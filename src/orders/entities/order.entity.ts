@@ -33,6 +33,9 @@ export class OrderEntity {
   user: UserEntity
 
   @Column({ nullable: true })
+  userEmail?: string
+
+  @Column({ nullable: true })
   address?: string
 
   @OneToOne(() => PaymentEntity, { nullable: true, onDelete: 'SET NULL' })
