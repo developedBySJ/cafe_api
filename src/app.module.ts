@@ -21,6 +21,7 @@ import {
   JWT_REFRESH_TOKEN_EXP_TIME,
   STRIPE_CURRENCY,
   STRIPE_SECRET_KEY,
+  DATABASE_URL,
 } from './common'
 import { MenusModule } from './menus/menus.module'
 import { AssetsModule } from './assets/assets.module'
@@ -35,11 +36,13 @@ import { MailmanModule } from '@squareboat/nest-mailman'
   imports: [
     ConfigModule.forRoot({
       validationSchema: Joi.object({
-        [DB_HOST]: Joi.string().required(),
-        [DB_PORT]: Joi.number().required(),
+        [DB_HOST]: Joi.string(),
+        [DATABASE_URL]: Joi.string(),
+        [DB_PORT]: Joi.number(),
+        [DB_USER]: Joi.string(),
+        [DB_PASSWORD]: Joi.string(),
+        [DB_DATABASE]: Joi.string(),
         [DB_USER]: Joi.string().required(),
-        [DB_PASSWORD]: Joi.string().required(),
-        [DB_DATABASE]: Joi.string().required(),
         [PORT]: Joi.number(),
         [JWT_SECRET]: Joi.string().required(),
         [JWT_EXP_TIME]: Joi.string().required(),
