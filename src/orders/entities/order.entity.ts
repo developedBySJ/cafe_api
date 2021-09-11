@@ -29,8 +29,8 @@ export class OrderEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
-  @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
-  user: UserEntity
+  @ManyToOne(() => UserEntity, { onDelete: 'SET NULL', nullable: true })
+  user?: UserEntity
 
   @Column({ nullable: true })
   userEmail?: string

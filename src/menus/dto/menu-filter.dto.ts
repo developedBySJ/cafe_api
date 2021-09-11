@@ -10,5 +10,5 @@ export class MenuFilterDto extends PageOptionsDto {
   @IsBoolean()
   @Transform(({ value }) => ['1', 1, 'true', true].includes(value))
   @IsOptional()
-  isActive?: boolean
+  isActive?: any
 }

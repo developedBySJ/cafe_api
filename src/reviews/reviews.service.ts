@@ -105,10 +105,13 @@ export class ReviewsService {
   }
 
   async findOne(id: string, curUser?: UserEntity) {
-    const review = await this._reviewsRepository.findOne({
-      id,
-      ...(curUser && { createdBy: curUser }),
-    })
+    const review = await this._reviewsRepository.findOne(
+      {
+        id,
+        ...(curUser && { createdBy: curUser }),
+      },
+      { relations: ['menuItem', 'createdBy'] },
+    )
 
     if (!review) throw new ReviewNotFoundException(id)
 

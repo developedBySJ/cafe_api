@@ -8,8 +8,8 @@ import { setUpSwagger } from './utils'
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
 
-  app.use(helmet())
-  app.enableCors()
+  app.use(helmet({ contentSecurityPolicy: false }))
+  // app.enableCors()
   app.use(cookieParser())
 
   app.setGlobalPrefix('/api/v1')

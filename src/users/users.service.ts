@@ -119,7 +119,7 @@ export class UsersService {
 
   async remove(id: string, curUser: UserEntity) {
     const user = await this.verify(id, curUser)
-    await this._usersRepository.delete(user)
+    await this._usersRepository.remove(user)
     return null
   }
 }

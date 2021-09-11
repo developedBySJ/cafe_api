@@ -22,6 +22,7 @@ export class AssetsService {
     type: AssetType,
   ): Promise<AssetResponse> {
     try {
+      console.log({ file })
       const res = await this._cloudinaryService.upload(
         file,
         `${CLOUDINARY_FOLDER}/${type}`,
@@ -41,6 +42,7 @@ export class AssetsService {
         url: res.secure_url,
       }
     } catch (error) {
+      console.log(error)
       throw new AssetUploadFailedException()
     }
   }
@@ -50,6 +52,7 @@ export class AssetsService {
     type: AssetType,
   ): Promise<AssetResponse[]> {
     try {
+      console.log({ files })
       const res = await Promise.all(
         files.map((file) =>
           this._cloudinaryService.upload(file, `${CLOUDINARY_FOLDER}/${type}`),
@@ -68,6 +71,7 @@ export class AssetsService {
 
       return newAsset.map((asset) => ({ id: asset.id, url: asset.url }))
     } catch (error) {
+      console.log(error)
       throw new AssetUploadFailedException()
     }
   }

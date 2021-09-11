@@ -32,6 +32,8 @@ import { ReviewsModule } from './reviews/reviews.module'
 import { OrdersModule } from './orders/orders.module'
 import { PaymentsModule } from './payments/payments.module'
 import { MailmanModule } from '@squareboat/nest-mailman'
+import { ServeStaticModule } from '@nestjs/serve-static'
+import { join } from 'path'
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -67,6 +69,13 @@ import { MailmanModule } from '@squareboat/nest-mailman'
     ReviewsModule,
     OrdersModule,
     PaymentsModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'build'),
+      exclude: ['/api/v1'],
+      serveStaticOptions: {
+        extensions: [],
+      },
+    }),
     MailmanModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

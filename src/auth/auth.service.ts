@@ -109,7 +109,7 @@ export class AuthService {
     const viewerCookie = req.cookies[AUTH_COOKIE_KEY]
 
     if (!viewerCookie) {
-      return null
+      return this.logout(req, res)
     }
 
     const viewer = this._jwtService.verify<JWTPayload>(viewerCookie)
@@ -117,6 +117,7 @@ export class AuthService {
     if (viewer.userId) {
       try {
         const user = await this._usersRepository.findOne(viewer.userId)
+        if (!user) return this.logout(req, res)
         return user
       } catch (error) {
         return this.logout(req, res)

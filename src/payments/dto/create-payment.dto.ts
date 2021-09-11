@@ -14,8 +14,7 @@ export class CreatePaymentDto {
   @IsNumber()
   amount: number
 
-  @IsUUID()
-  @IsOptional()
+  @IsUUID(4)
   orderId: string
 }
 export class CreateCashPaymentDto {
@@ -27,7 +26,6 @@ export class CreateCashPaymentDto {
   @IsNumber()
   amount: number
 
-  @IsUUID()
-  @IsOptional()
+  @IsUUID(4)
   orderId: string
 }

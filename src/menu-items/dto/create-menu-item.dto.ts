@@ -24,17 +24,17 @@ export class CreateMenuItemDto {
   images: string[]
 
   @IsBoolean()
-  isAvailable: boolean = false
+  isAvailable = false
 
   @IsBoolean()
-  isVeg: boolean = false
+  isVeg = false
 
   @IsPositive()
   price: number
 
   @Min(0)
   @Max(99)
-  discount: number = 0
+  discount = 0
 
   @Length(3, 1000)
   @IsOptional()

@@ -140,6 +140,8 @@ export class InventoryService {
 
     const { availableStock, unit, units, ...other } = updateInventoryDto
 
+    console.log(Object.assign(inventory, other), other)
+
     const updatedInventory = await this._inventoryRepository.save(
       Object.assign(inventory, other),
     )

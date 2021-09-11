@@ -59,15 +59,22 @@ export class MenusService {
 
   async update(id: string, updateMenuDto: UpdateMenuDto) {
     const menu = await this.findOne(id)
-    const updatedMenu = await this._menusRepository.save(
-      Object.assign(menu, updateMenuDto),
-    )
-    return plainToClass(MenuEntity, updatedMenu)
+    try {
+      const updatedMenu = await this._menusRepository.save(
+        Object.assign(menu, updateMenuDto),
+      )
+      return plainToClass(MenuEntity, updatedMenu)
+    } catch (error) {
+      if (error?.code === '23505') {
+        throw new MenuExistException()
+      }
+      throw new InternalServerErrorException()
+    }
   }
 
   async remove(id: string) {
     const menu = await this.findOne(id)
-    await this._menusRepository.delete(menu)
+    await this._menusRepository.remove(menu)
     return null
   }
 }

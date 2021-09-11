@@ -4,6 +4,7 @@ import { PaymentNotFoundException } from 'src/exceptions/payment-not-found.excep
 import { OrderEntity } from 'src/orders/entities/order.entity'
 import { OrdersService } from 'src/orders/orders.service'
 import { UserEntity } from 'src/users/entities/user.entity'
+import { UtilsService } from 'src/utils/services'
 import { Between, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm'
 import {
   CreateCashPaymentDto,
@@ -84,10 +85,18 @@ export class PaymentsService {
     return newPayment
   }
 
-  findAll(filter: PaymentFilterDto) {
+  async findAll(filter: PaymentFilterDto) {
     console.log({ filter })
-    const { skip, limit, createdAtFrom, createdAtTo, sort, sortBy } = filter
-    return this._paymentRepository.findAndCount({
+    const {
+      skip,
+      limit,
+      createdAtFrom,
+      createdAtTo,
+      sort,
+      sortBy,
+      page,
+    } = filter
+    const payments = await this._paymentRepository.findAndCount({
       loadRelationIds: true,
       skip,
       take: limit,
@@ -101,6 +110,20 @@ export class PaymentsService {
         ),
       },
     })
+    const paginationResponse = UtilsService.paginationResponse({
+      baseUrl: '',
+      curPage: page,
+      data: payments,
+      limit,
+      query: {
+        sortBy,
+        createdAtFrom,
+        createdAtTo,
+        sort,
+      },
+    })
+
+    return paginationResponse
   }
 
   findOne(id: string) {
