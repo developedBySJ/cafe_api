@@ -29,7 +29,7 @@
 4. [Tech Stack](#tech-stack)
 5. [Showcase](#showcase)
 
-##🏃🏻‍♂️ Getting Started :
+## 🏃🏻‍♂️ Getting Started :
 
 ```
 # install dependencies
@@ -46,7 +46,7 @@ $ npm run start:prod
 
 ```
 
-##🥳 Features:
+## 🥳 Features:
 
 Cuisine Restaurant is full-stack web application build using React, NestJs, Postgres, Material Design System.
 
@@ -82,7 +82,7 @@ Cuisine Restaurant is full-stack web application build using React, NestJs, Post
 
 Demo Link : [Cuisine Restaurant](http://cuisine-restro.herokuapp.com/)
 
-##🚀 Tech Stack
+## 🚀 Tech Stack
 
 - [React - Frontend Framework](https://reactjs.org/)
 - [Material UI - Design System](https://material-ui.com/)
@@ -90,7 +90,7 @@ Demo Link : [Cuisine Restaurant](http://cuisine-restro.herokuapp.com/)
 - [Postgres - Sql Database](https://www.postgresql.org/)
 - [Stripe - Payment](https://stripe.com/)
 
-##🌈 Showcase:
+## 🌈 Showcase:
 
 #### Landing Page:
 
