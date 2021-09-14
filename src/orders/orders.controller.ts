@@ -38,6 +38,12 @@ export class OrdersController {
     return this.ordersService.findAllByUser(user, filter)
   }
 
+  @Roles(UserRole.Admin, UserRole.Manager)
+  @Get('/overview')
+  getOverview() {
+    return this.ordersService.getOverview()
+  }
+
   @Get('/all')
   @Roles(UserRole.Admin)
   findAll(@Query() filter: OrderFilterDto, @Query('userId') userId?: string) {

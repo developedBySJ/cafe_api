@@ -49,6 +49,12 @@ export class PaymentsController {
     return this.paymentsService.findAll(paymentFilter)
   }
 
+  @Roles(UserRole.Admin, UserRole.Manager)
+  @Get('/overview')
+  getOverview() {
+    return this.paymentsService.getOverview()
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.paymentsService.findOne(id)

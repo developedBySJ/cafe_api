@@ -148,6 +148,40 @@ export class OrdersService {
     return this.findAll(filter, user.id)
   }
 
+  async getOverview() {
+    const orderPlaced = await this._orderRepository.count()
+    const orderPending = await this._orderRepository.count({
+      status: LessThan(OrderStatus.Delivered),
+    })
+    const orderDelivered = await this._orderRepository.count({
+      status: Equal(OrderStatus.Delivered),
+    })
+
+    const orderPendingSummery = await this._orderRepository.query(
+      `SELECT COUNT(id), extract('hours' from created_at) as time FROM orders
+      WHERE created_at >= (NOW() - INTERVAL '24 hours') AND status <= $1
+      GROUP BY extract('hours' from created_at)`,
+      [OrderStatus.Delivered],
+    )
+    const orderPlacedSummery = await this._orderRepository.query(
+      `SELECT COUNT(id), extract('hours' from created_at) as time FROM orders
+      WHERE created_at >= (NOW() - INTERVAL '24 hours')
+      GROUP BY extract('hours' from created_at)`,
+    )
+    const data = {
+      count: {
+        orderPlaced,
+        orderPending,
+        orderDelivered,
+      },
+      summery: {
+        orderPlacedSummery,
+        orderPendingSummery,
+      },
+    }
+    return data
+  }
+
   async findAll(filter: OrderFilterDto, userId?: string) {
     const {
       createdAtFilter,

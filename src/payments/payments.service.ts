@@ -85,6 +85,30 @@ export class PaymentsService {
     return newPayment
   }
 
+  async getOverview() {
+    const totalPayment = (
+      await this._paymentRepository.query(
+        `SELECT SUM(amount)/100 as count FROM payment WHERE created_at >= (NOW() - INTERVAL '1 month' );`,
+      )
+    )[0]?.count as number
+
+    const paymentSummery = await this._paymentRepository.query(
+      `SELECT SUM(amount)/100 as count,extract('day' from created_at) as time FROM payment
+      WHERE created_at >= (NOW() - INTERVAL '1 month' )
+      GROUP BY extract('day' from created_at)
+      ORDER BY extract('day' from created_at) ASC;`,
+    )
+    const data = {
+      count: {
+        totalPayment,
+      },
+      summery: {
+        paymentSummery,
+      },
+    }
+    return data
+  }
+
   async findAll(filter: PaymentFilterDto) {
     console.log({ filter })
     const {
