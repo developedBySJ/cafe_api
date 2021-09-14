@@ -84,8 +84,8 @@ export class OrdersService {
       status > 0 && status === 'pending'
         ? { status: LessThan(OrderStatus.Delivered) }
         : status
-          ? { status }
-          : {}
+        ? { status }
+        : {}
 
     const orderFilter = {
       createdAtFilter,
@@ -249,7 +249,10 @@ export class OrdersService {
 
     const updatedOrder = await this._orderRepository.save(order)
 
-    if (updatedOrder.status === OrderStatus.Delivered) {
+    if (
+      updatedOrder.status === OrderStatus.Delivered &&
+      updatedOrder.userEmail
+    ) {
       await this._ordersEmailService.orderDelivered({
         email: updatedOrder.userEmail,
         orderId: updatedOrder.id,

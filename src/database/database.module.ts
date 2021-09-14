@@ -32,12 +32,14 @@ types.setTypeParser(types.builtins.INT8, (value) => parseInt(value))
         entities: ['dist/**/*.entity{.ts,.js}'],
         migrations: [__dirname + '/../migrations/*{.ts,.js}'],
         synchronize: process.env.NODE_ENV === 'development',
-        ssl: true,
-        extra: {
-          ssl: {
-            rejectUnauthorized: false,
+        ...(process.env.NODE_ENV !== 'development' && {
+          ssl: true,
+          extra: {
+            ssl: {
+              rejectUnauthorized: false,
+            },
           },
-        },
+        }),
         logging: 'all',
         logger: 'advanced-console',
         bigNumberStrings: false,
