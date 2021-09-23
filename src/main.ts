@@ -6,7 +6,6 @@ import sslRedirect from 'heroku-ssl-redirect'
 import { AppModule } from './app.module'
 import { setUpSwagger } from './utils'
 
-console.log(process.env)
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
 
@@ -23,10 +22,11 @@ async function bootstrap() {
       whitelist: true,
     }),
   )
-
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)))
+
   setUpSwagger(app)
 
   await app.listen(process.env.PORT || 9000)
 }
+
 bootstrap()
