@@ -80,7 +80,7 @@ Cuisine Restaurant is full-stack web application build using React, NestJs, Post
 
 ## 🌐 Demo
 
-Demo Link : [Cuisine Restaurant](http://cuisine-restro.herokuapp.com/)
+Demo Link : [Cuisine Restaurant](https://cafe.swapniljagtap.com)
 
 ## 🚀 Tech Stack
 
