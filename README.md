@@ -112,10 +112,10 @@ Demo Link : [Cuisine Restaurant](https://cafe.swapniljagtap.com)
 
 ![Product-Page](/media/checkout.png)
 
-##📚 License
+## 📚 License
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
-##😇 Contact
+## 😇 Contact
 
 <a href="mailto:developedbysj@gmail.com">![developedbysj@gmail.com](https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white)</a> <a href="http://in.linkedin.com/in/swapnil-jagtap-7b8b5b202">![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)
